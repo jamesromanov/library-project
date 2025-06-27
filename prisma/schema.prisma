@@ -13,7 +13,7 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
+// ADMIN model
 model Admin {
   id String @id @default(uuid())
   name  String?
@@ -22,7 +22,7 @@ model Admin {
   role Role
   createdAt DateTime @default(now())
 }
-
+// BOOK model
 model Book {
   id String @id @default(uuid())
   title String 
@@ -37,7 +37,7 @@ model Book {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
+// APPLICAION 
 model Application {
   id String @id @default(ulid())
   name String 
@@ -46,10 +46,20 @@ model Application {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
+// NEW model
+model New {
+  id String @id @default(ulid())
+  titel String 
+  image String
+  context String
+  publication_date String
+  source String
+}
+// USER role 
 enum Role {
   ADMIN
 }
+// BOOK languages
 enum Languages {
   RU 
   EN 
