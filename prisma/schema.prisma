@@ -54,6 +54,8 @@ model New {
   context String
   publication_date String
   source String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 // USER role 
 enum Role {
