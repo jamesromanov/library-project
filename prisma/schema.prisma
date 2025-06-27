@@ -36,6 +36,8 @@ model Book {
   language Languages
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([title, price, pages, language, createdAt])
 }
 // APPLICAION 
 model Application {
@@ -45,17 +47,21 @@ model Application {
   question String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([createdAt])
 }
 // NEW model
 model New {
   id String @id @default(ulid())
-  titel String 
+  title String 
   image String
   context String
   publication_date String
   source String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([updatedAt])
 }
 // USER role 
 enum Role {
