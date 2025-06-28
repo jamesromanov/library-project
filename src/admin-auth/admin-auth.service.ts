@@ -24,7 +24,7 @@ export class AdminAuthService {
     private jwt: JwtService,
   ) {}
   // ADMIN register (only once if the admin doesn't exist) can be only one admin
-  async reateAdminAuth(createAdminAuth: CreateAdminAuthDto) {
+  async createAdminAuth(createAdminAuth: CreateAdminAuthDto) {
     const adminExists = await this.prisma.admin.findMany({
       where: { role: AdminRole.ADMIN },
     });
