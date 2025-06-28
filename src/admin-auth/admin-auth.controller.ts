@@ -37,7 +37,7 @@ export class AdminAuthController {
   @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @Post('register')
   createAdmin(@Body() createAdminAuthDto: CreateAdminAuthDto) {
-    return this.adminAuthService.reateAdminAuth(createAdminAuthDto);
+    return this.adminAuthService.createAdminAuth(createAdminAuthDto);
   }
 
   @ApiOperation({
