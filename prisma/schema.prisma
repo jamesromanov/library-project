@@ -58,16 +58,19 @@ model New {
   context String
   publication_date String
   source String
+  language Languages
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([updatedAt])
+  @@index([updatedAt, language, createdAt])
 }
+
+
 // USER role 
 enum Role {
   ADMIN
 }
-// BOOK languages
+// BOOK | NEWS languages 
 enum Languages {
   RU 
   EN 
