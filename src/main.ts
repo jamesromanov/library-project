@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -10,6 +11,11 @@ async function bootstrap() {
     type: VersioningType.URI,
     defaultVersion: '1',
   });
+  app.enableCors({
+    credentials: true,
+    origin: process.env.FRONTEND_URL,
+  });
+  app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder()
     .setTitle("Tuproqqal'a TAKM api V1")

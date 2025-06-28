@@ -11,6 +11,7 @@ import { LoginAdminAuthDto } from './dto/login-admin-auth.dto';
 import { RedisService } from 'src/redis/redis.service';
 import { Admin } from 'generated/prisma';
 import { JwtService } from '@nestjs/jwt';
+import { Response } from 'express';
 
 @Injectable()
 export class AdminAuthService {
@@ -24,6 +25,7 @@ export class AdminAuthService {
     const adminExists = await this.prisma.admin.findMany({
       where: { role: AdminRole.ADMIN },
     });
+    console.log(adminExists);
     // await this.prisma.admin.deleteMany({
     //   where: { role: AdminRole.ADMIN },
     // });
@@ -42,7 +44,7 @@ export class AdminAuthService {
   }
 
   // ADMIN login refresh based token sharing
-  async loginAdmin(loginAdminAuthDto: LoginAdminAuthDto) {
+  async loginAdmin(loginAdminAuthDto: LoginAdminAuthDto, res: Response) {
     const { email, password } = loginAdminAuthDto;
     let admin: Admin;
     const adminExistsCache = await this.redis.get(`admin:${email}`);
@@ -53,5 +55,27 @@ export class AdminAuthService {
     });
     if (!adminExists || adminExists.role !== AdminRole.ADMIN)
       throw new NotFoundException('Admin topilmadi.');
+    await this.redis.set(`admin:${email}`, adminExists);
+    admin = adminExists;
+    const payload = {
+      id: admin.id,
+      role: admin.role,
+    };
+    const refreshToken = await this.jwt.signAsync(payload, {
+      secret: process.env.REFRESH_TOKEN_KEY,
+      expiresIn: process.env.REFRESH_TOKEN_EXP,
+    });
+
+    res.cookie('jwt', refreshToken, {
+      expires: eval(process.env.COOKIE_EXP as string),
+      secure: true,
+      httpOnly: true,
+    });
+
+    await this.prisma.admin.update({
+      where: { email },
+      data: { refreshToken },
+    });
+    return 'Muvaffaqiyatli royhatdan otildi.';
   }
 }
