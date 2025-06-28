@@ -1,3 +1,4 @@
+import { ApiOperation, ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
   IsNotEmpty,
@@ -8,6 +9,10 @@ import {
 
 // ADMIN login operatoins
 export class LoginAdminAuthDto {
+  @ApiProperty({
+    type: 'string',
+    default: 'exmaple@gmail.com',
+  })
   @IsNotEmpty()
   @IsString()
   @IsEmail()
@@ -16,6 +21,10 @@ export class LoginAdminAuthDto {
   })
   email: string;
 
+  @ApiProperty({
+    type: 'string',
+    default: 'kuchliParol1:!',
+  })
   @IsNotEmpty()
   @IsString()
   @IsStrongPassword({ minLength: 6 })
