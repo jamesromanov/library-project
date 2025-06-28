@@ -10,13 +10,16 @@ import * as bcyrpt from 'bcrypt';
 import { LoginAdminAuthDto } from './dto/login-admin-auth.dto';
 import { RedisService } from 'src/redis/redis.service';
 import { Admin } from 'generated/prisma';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AdminAuthService {
   constructor(
     private readonly prisma: PrismaService,
     private redis: RedisService,
+    private jwt: JwtService,
   ) {}
+  // ADMIN register
   async reateAdminAuth(createAdminAuth: CreateAdminAuthDto) {
     const adminExists = await this.prisma.admin.findMany({
       where: { role: AdminRole.ADMIN },
@@ -38,6 +41,7 @@ export class AdminAuthService {
     return "Muvaffaqiyatli Qo'shildi!";
   }
 
+  // ADMIN login refresh based token sharing
   async loginAdmin(loginAdminAuthDto: LoginAdminAuthDto) {
     const { email, password } = loginAdminAuthDto;
     let admin: Admin;

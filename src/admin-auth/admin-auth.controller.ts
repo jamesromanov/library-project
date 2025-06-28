@@ -19,6 +19,7 @@ import {
 @Controller('admin-auth')
 export class AdminAuthController {
   constructor(private readonly adminAuthService: AdminAuthService) {}
+  // ADMIN creating
   @ApiOperation({
     summary: 'admin tayinlash',
     description:
