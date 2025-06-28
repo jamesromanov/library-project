@@ -11,6 +11,9 @@ export class LoginAdminAuthDto {
   @IsNotEmpty()
   @IsString()
   @IsEmail()
+  @Matches(/^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/, {
+    message: 'Email formati xato.',
+  })
   email: string;
 
   @IsNotEmpty()
