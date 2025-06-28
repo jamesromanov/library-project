@@ -28,5 +28,7 @@ export class AdminAuthController {
   @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
   @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @Post('register')
-  createAdmin(CreateAdminAuthDto: CreateAdminAuthDto) {}
+  createAdmin(@Body() createAdminAuthDto: CreateAdminAuthDto) {
+    return this.adminAuthService.reateAdminAuth(createAdminAuthDto);
+  }
 }
