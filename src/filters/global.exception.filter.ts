@@ -17,6 +17,7 @@ import {
 } from 'generated/prisma/runtime/library';
 
 @Catch()
+// Global exception filter to catch all errors
 export class GlobalExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
