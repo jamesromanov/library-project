@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateAdminAuthDto } from './dto/create-admin-auth.dto';
@@ -11,7 +12,7 @@ import { LoginAdminAuthDto } from './dto/login-admin-auth.dto';
 import { RedisService } from 'src/redis/redis.service';
 import { Admin } from 'generated/prisma';
 import { JwtService } from '@nestjs/jwt';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 @Injectable()
 export class AdminAuthService {
@@ -20,7 +21,7 @@ export class AdminAuthService {
     private redis: RedisService,
     private jwt: JwtService,
   ) {}
-  // ADMIN register
+  // ADMIN register (only once if the admin doesn't exist) can be only one admin
   async reateAdminAuth(createAdminAuth: CreateAdminAuthDto) {
     const adminExists = await this.prisma.admin.findMany({
       where: { role: AdminRole.ADMIN },
@@ -77,5 +78,32 @@ export class AdminAuthService {
       data: { refreshToken },
     });
     return 'Muvaffaqiyatli royhatdan otildi.';
+  }
+
+  // ADMIN access token refresh by refreshToken
+  async refreshToken(req: Request, res: Response) {
+    const refreshToken = req.cookies.jwt;
+    const validateToken = await this.jwt.verifyAsync(refreshToken, {
+      secret: process.env.REFRESH_TOKEN_KEY,
+    });
+
+    const adminExists = await this.findByToken(refreshToken);
+    if (adminExists.id !== validateToken.id)
+      throw new UnauthorizedException('Token yaroqsiz.');
+
+    const payload = {
+      id: adminExists.id,
+      role: adminExists.role,
+    };
+  }
+
+  async findByToken(token: string) {
+    const adminExistsCache = await this.redis.get(`admin:token:${token}`);
+    if (adminExistsCache) return JSON.parse(adminExistsCache);
+    const adminExists = await this.prisma.admin.findUnique({
+      where: { refreshToken: token },
+    });
+    if (!adminExists) throw new NotFoundException('Admin topilmadi.');
+    return adminExists;
   }
 }

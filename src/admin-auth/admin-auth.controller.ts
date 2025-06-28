@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Res,
+  Req,
 } from '@nestjs/common';
 import { AdminAuthService } from './admin-auth.service';
 import { CreateAdminAuthDto } from './dto/create-admin-auth.dto';
@@ -18,7 +19,7 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 import { LoginAdminAuthDto } from './dto/login-admin-auth.dto';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 @Controller('admin-auth')
 export class AdminAuthController {
@@ -55,4 +56,18 @@ export class AdminAuthController {
   ) {
     return this.adminAuthService.loginAdmin(loginAdminAuthDto, res);
   }
+
+  @ApiOperation({
+    summary: 'access token olish',
+    description: 'cookida saqlanga refresh token asosida access token olinadi',
+  })
+  @ApiCreatedResponse({ description: 'Muvaffaqiyatli olindi' })
+  @ApiConflictResponse({ description: 'Conflict xatolik' })
+  @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
+  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
+  @Post('refresh')
+  refreshToken(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {}
 }

@@ -19,7 +19,7 @@ model Admin {
   name  String?
   email String @unique
   password String
-  refreshToken String?
+  refreshToken String? @unique
   role Role
   createdAt DateTime @default(now())
 }
