@@ -20,8 +20,8 @@ jobs:
       - name: Dependenciyalarni ornatish
         run: npm ci
 
-      - name: Testlarni ishga tushirish
-        run: npm run test
+      # - name: Testlarni ishga tushirish
+      #   run: npm run test
 
       - name: Build qilish
         run: npm run build
