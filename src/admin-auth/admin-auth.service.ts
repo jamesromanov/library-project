@@ -29,9 +29,7 @@ export class AdminAuthService {
       where: { role: AdminRole.ADMIN },
     });
     console.log(adminExists);
-    // await this.prisma.admin.deleteMany({
-    //   where: { role: AdminRole.ADMIN },
-    // });
+
     if (adminExists.length && adminExists[0].role === AdminRole.ADMIN) {
       throw new BadRequestException(
         "Admin oldin qo'shilgan.Ikkinchi admin yaratish mumkin emas.",
