@@ -17,6 +17,7 @@ import {
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiOperation,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { LoginAdminAuthDto } from './dto/login-admin-auth.dto';
 import { Request, Response } from 'express';
@@ -61,13 +62,15 @@ export class AdminAuthController {
     summary: 'access token olish',
     description: 'cookida saqlanga refresh token asosida access token olinadi',
   })
+  @ApiUnauthorizedResponse({
+    description: "Tokenda yoki Hato ma'lumot kiritilgandagi xatolik",
+  })
   @ApiCreatedResponse({ description: 'Muvaffaqiyatli olindi' })
   @ApiConflictResponse({ description: 'Conflict xatolik' })
   @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
   @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @Post('refresh')
-  refreshToken(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ) {}
+  refreshToken(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    return this.adminAuthService.refreshToken(req, res);
+  }
 }
