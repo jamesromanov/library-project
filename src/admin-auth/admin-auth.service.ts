@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateAdminAuthDto } from './dto/create-admin-auth.dto';
 import { AdminRole } from './admin.role';
+import * as bcyrpt from 'bcrypt';
 
 @Injectable()
 export class AdminAuthService {
@@ -10,14 +11,20 @@ export class AdminAuthService {
     const adminExists = await this.prisma.admin.findMany({
       where: { role: AdminRole.ADMIN },
     });
-    console.log(adminExists);
+    // await this.prisma.admin.deleteMany({
+    //   where: { role: AdminRole.ADMIN },
+    // });
     if (adminExists.length && adminExists[0].role === AdminRole.ADMIN) {
       throw new BadRequestException(
         "Admin oldin qo'shilgan.Ikkinchi admin yaratish mumkin emas.",
       );
     }
 
-    const admin = await this.prisma.admin.create({ data: createAdminAuth });
-    return admin;
+    createAdminAuth.password = await bcyrpt.hash(
+      createAdminAuth.password,
+      Number(process.env.HASH_SALT),
+    );
+    await this.prisma.admin.create({ data: createAdminAuth });
+    return "Muvaffaqiyatli Qo'shildi!";
   }
 }
