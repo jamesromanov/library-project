@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpException,
   HttpStatus,
+  Inject,
 } from '@nestjs/common';
 import { ThrottlerException } from '@nestjs/throttler';
 import { Request, Response } from 'express';
@@ -15,10 +16,13 @@ import {
   PrismaClientUnknownRequestError,
   PrismaClientValidationError,
 } from 'generated/prisma/runtime/library';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 
 @Catch()
 // Global exception filter to catch all errors
 export class GlobalExceptionFilter implements ExceptionFilter {
+  constructor(@Inject(WINSTON_MODULE_PROVIDER) private logger: Logger) {}
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const request = ctx.getRequest<Request>();
@@ -61,6 +65,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         message = (exception as any)?.response?.message || message;
     }
 
+    this.logger.error(message);
     return response.status(status).json({
       success: false,
       statusCode: status,

@@ -11,6 +11,7 @@ import { GlobalExceptionFilter } from './filters/global.exception.filter';
 import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import * as path from 'path';
+import { RequestLoggerModule } from './request-logger/request-logger.module';
 
 @Module({
   imports: [
@@ -32,9 +33,7 @@ import * as path from 'path';
         }),
       ),
     }),
-    WinstonModule.forRoot({
-      
-    }),
+    RequestLoggerModule,
   ],
   providers: [
     {
