@@ -13,6 +13,7 @@ import { RedisService } from 'src/redis/redis.service';
 import { Admin } from 'generated/prisma';
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
+import { json } from 'stream/consumers';
 
 @Injectable()
 export class AdminAuthService {
@@ -95,6 +96,11 @@ export class AdminAuthService {
       id: adminExists.id,
       role: adminExists.role,
     };
+    const accessToken = await this.jwt.signAsync(payload, {
+      secret: process.env.ACCESS_TOKEN_KEY,
+      expiresIn: process.env.ACCESS_TOKEN_EXP,
+    });
+    return { accessToken };
   }
 
   async findByToken(token: string) {
