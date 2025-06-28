@@ -6,6 +6,7 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
+import { ThrottlerException } from '@nestjs/throttler';
 import { Request, Response } from 'express';
 import {
   PrismaClientInitializationError,
@@ -20,7 +21,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const request = ctx.getRequest<Request>();
-    const response = ctx.getRequest<Response>();
+    const response = ctx.getResponse<Response>();
 
     let message = 'Serverda hatolik';
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -49,18 +50,22 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         message = (exception as PrismaClientUnknownRequestError).message;
         status = HttpStatus.CONFLICT;
         break;
+      case ThrottlerException:
+        message = "Bir vaqtda ko'p so'rovlar berildi. Iltimos kuting!";
+        status = HttpStatus.TOO_MANY_REQUESTS;
+        break;
       default:
         console.log(exception as any);
         status = (exception as any).status || HttpStatus.INTERNAL_SERVER_ERROR;
         message = (exception as any)?.response?.message || message;
     }
 
-    return {
+    return response.status(status).json({
       success: false,
       statusCode: status,
       message,
       timestamp: new Date().toISOString(),
       path: request.url,
-    };
+    });
   }
 }
