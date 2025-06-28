@@ -60,9 +60,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         status = HttpStatus.TOO_MANY_REQUESTS;
         break;
       default:
-        console.log(exception as any);
         status = (exception as any).status || HttpStatus.INTERNAL_SERVER_ERROR;
-        message = (exception as any)?.response?.message || message;
+        message = (exception as any)?.response?.message
+          ? (exception as any)?.response?.message
+          : (exception as any).message || message;
     }
 
     this.logger.error(message, {
@@ -70,6 +71,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       ip: request.ip,
       statusCode: status,
     });
+
     return response.status(status).json({
       success: false,
       statusCode: status,
