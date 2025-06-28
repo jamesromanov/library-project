@@ -11,6 +11,7 @@ import { AdminAuthService } from './admin-auth.service';
 import { CreateAdminAuthDto } from './dto/create-admin-auth.dto';
 import {
   ApiBadRequestResponse,
+  ApiConflictResponse,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiOperation,
@@ -25,6 +26,7 @@ export class AdminAuthController {
     description:
       "admin tayinlash agarda mavjud bo'lmasa. Faqat bitta tayinlanishi mumkin.",
   })
+  @ApiConflictResponse({ description: 'Conflict xatolik' })
   @ApiCreatedResponse({ description: "Muvaffaqiyatli qo'shildi" })
   @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
   @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })

@@ -6,13 +6,15 @@ import { RedisModule } from './redis/redis.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis';
 import Redis from 'ioredis';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { GlobalExceptionFilter } from './filters/global.exception.filter';
 
 @Module({
   imports: [
     AdminAuthModule,
     PrismaModule,
     RedisModule,
+    // RATE limit
     ThrottlerModule.forRoot({
       throttlers: [
         {
@@ -29,6 +31,10 @@ import { APP_GUARD } from '@nestjs/core';
     }),
   ],
   providers: [
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
+    },
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
