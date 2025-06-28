@@ -65,7 +65,11 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         message = (exception as any)?.response?.message || message;
     }
 
-    this.logger.error(message);
+    this.logger.error(message, {
+      path: request.url,
+      ip: request.ip,
+      statusCode: status,
+    });
     return response.status(status).json({
       success: false,
       statusCode: status,
