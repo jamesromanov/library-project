@@ -8,6 +8,9 @@ import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis'
 import Redis from 'ioredis';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { GlobalExceptionFilter } from './filters/global.exception.filter';
+import { WinstonModule } from 'nest-winston';
+import * as winston from 'winston';
+import * as path from 'path';
 
 @Module({
   imports: [
@@ -28,6 +31,9 @@ import { GlobalExceptionFilter } from './filters/global.exception.filter';
           port: Number(process.env.REDIS_PORT),
         }),
       ),
+    }),
+    WinstonModule.forRoot({
+      
     }),
   ],
   providers: [

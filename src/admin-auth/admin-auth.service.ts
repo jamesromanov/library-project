@@ -13,7 +13,6 @@ import { RedisService } from 'src/redis/redis.service';
 import { Admin } from 'generated/prisma';
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
-import { json } from 'stream/consumers';
 
 @Injectable()
 export class AdminAuthService {
@@ -56,7 +55,14 @@ export class AdminAuthService {
       where: { email },
     });
     if (!adminExists || adminExists.role !== AdminRole.ADMIN)
-      throw new NotFoundException('Admin topilmadi.');
+      throw new NotFoundException('Parol yoki email xato.');
+
+    const comparePassword = await bcyrpt.compare(
+      password,
+      adminExists.password,
+    );
+    if (!comparePassword)
+      throw new BadRequestException('Parol yoki email xato.');
     await this.redis.set(`admin:${email}`, adminExists);
     admin = adminExists;
     const payload = {
