@@ -42,6 +42,9 @@ export class AdminAuthController {
     summary: 'admin login',
     description: "admin royhatdan o'tish",
   })
+  @ApiCreatedResponse({
+    description: "Muvaffaqiyatli ro'yhatdan o'tildi",
+  })
   @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
   @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @ApiConflictResponse({ description: 'Conflict xatolik' })

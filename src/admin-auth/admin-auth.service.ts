@@ -67,7 +67,7 @@ export class AdminAuthService {
     });
 
     res.cookie('jwt', refreshToken, {
-      expires: eval(process.env.COOKIE_EXP as string),
+      maxAge: eval(process.env.COOKIE_EXP as string),
       secure: true,
       httpOnly: true,
     });

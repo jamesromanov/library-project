@@ -24,7 +24,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
     const response = ctx.getResponse<Response>();
 
-    let message = 'Serverda hatolik';
+    let message = 'Serverda xatolik';
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
 
     switch (exception?.constructor) {
