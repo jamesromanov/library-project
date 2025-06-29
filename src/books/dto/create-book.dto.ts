@@ -14,7 +14,7 @@ export class CreateBookDto {
   @IsString()
   author: string;
 
-  @ApiProperty({ type: 'string', format: 'binary', default: 'image/url' })
+  @ApiProperty({ type: 'string', format: 'binary', required: true })
   image: Express.Multer.File;
 
   @ApiProperty({ type: 'number', default: 2025 })

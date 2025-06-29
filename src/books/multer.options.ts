@@ -1,10 +1,12 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { diskStorage } from 'multer';
+import { diskStorage, memoryStorage } from 'multer';
 import * as path from 'path';
 
 export const multerOptions = {
   limits: {
-    fileSize: Number(process.env.MAX_IMAGE_SIZE),
+    fileSize:
+      // Number(process.env.MAX_IMAGE_SIZE) ||
+      2000000,
   },
   fileFilter: (req: any, file: any, cb: any) => {
     if (file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) cb(null, true);
@@ -18,18 +20,7 @@ export const multerOptions = {
         false,
       );
   },
-  storage: diskStorage({
-    destination: process.env.MULTER_DESTINATION,
-    filename: (req: any, file: any, cb: any) => {
-      cb(
-        null,
-        Date.now() +
-          '-' +
-          Math.floor(Math.random() * 10000) +
-          path.extname(file.originalname) || file.originalname,
-      );
-    },
-  }),
+  storage: memoryStorage(),
 };
 
 export const multerConfig = {

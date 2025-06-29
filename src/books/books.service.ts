@@ -6,7 +6,13 @@ import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 @Injectable()
 export class BooksService {
   constructor(private cloudinaryService: CloudinaryService) {}
-  create(createBookDto: CreateBookDto) {
+  async create(createBookDto: CreateBookDto, image: Express.Multer.File) {
+    await this.cloudinaryService
+      .uploadImage(image)
+      .then((data) => console.log(data))
+      .catch((err) => {
+        throw new Error(err);
+      });
     return 'This action adds a new book';
   }
 

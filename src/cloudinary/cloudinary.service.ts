@@ -14,6 +14,7 @@ export class CloudinaryService {
         resolve(result);
       });
 
+      //   const stream = Readable.from(image.buffer);
       toStream(image.buffer).pipe(upload);
     });
   }
