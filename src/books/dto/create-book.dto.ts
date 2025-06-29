@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { Languages } from '../languages';
 import { Type } from 'class-transformer';
 
@@ -18,13 +18,11 @@ export class CreateBookDto {
   image: Express.Multer.File;
 
   @ApiProperty({ type: 'number', default: 2025 })
-  @IsInt()
-  @Type(() => Number)
+  @IsNumber()
   publishedYear: number;
 
   @ApiProperty({ type: 'number', default: 120 })
-  @IsInt()
-  @Type(() => Number)
+  @IsNumber()
   price: number;
 
   @ApiProperty({ type: 'string', required: false, default: "Bu zo'r kitob" })
@@ -37,8 +35,7 @@ export class CreateBookDto {
   format: string;
 
   @ApiProperty({ type: 'number', default: 120 })
-  @IsInt()
-  @Type(() => Number)
+  @IsNumber()
   pages: number;
 
   @ApiProperty({ type: 'string', enum: Languages, default: Languages.UZ })

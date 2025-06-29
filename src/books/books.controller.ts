@@ -26,7 +26,6 @@ export class BooksController {
     @Body() createBookDto: CreateBookDto,
     @UploadedFile() image: Express.Multer.File,
   ) {
-    console.log(createBookDto, image);
     return this.booksService.create(createBookDto, image);
   }
 
