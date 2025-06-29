@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class BooksService {
+  constructor(private cloudinaryService: CloudinaryService) {}
   create(createBookDto: CreateBookDto) {
     return 'This action adds a new book';
   }
