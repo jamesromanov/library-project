@@ -4,9 +4,7 @@ import * as path from 'path';
 
 export const multerOptions = {
   limits: {
-    fileSize:
-      // Number(process.env.MAX_IMAGE_SIZE) ||
-      2000000,
+    fileSize: eval(process.env.MAX_IMAGE_SIZE as string),
   },
   fileFilter: (req: any, file: any, cb: any) => {
     if (file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) cb(null, true);

@@ -16,6 +16,7 @@ import {
   PrismaClientUnknownRequestError,
   PrismaClientValidationError,
 } from 'generated/prisma/runtime/library';
+import { MulterError } from 'multer';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 
@@ -28,12 +29,14 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
     const response = ctx.getResponse<Response>();
 
+    console.log(exception);
     let message = 'Serverda xatolik';
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
 
     switch (exception?.constructor) {
       case HttpException:
         status = (exception as HttpException).getStatus();
+        message = (exception as HttpException)?.message || message;
         break;
       case PrismaClientKnownRequestError:
         message = (exception as PrismaClientKnownRequestError).message;
@@ -58,6 +61,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       case ThrottlerException:
         message = "Bir vaqtda ko'p so'rovlar berildi. Iltimos kuting!";
         status = HttpStatus.TOO_MANY_REQUESTS;
+        break;
+      case MulterError:
+        message = (exception as MulterError).message;
+        status = HttpStatus.UNPROCESSABLE_ENTITY;
         break;
       default:
         status = (exception as any).status || HttpStatus.INTERNAL_SERVER_ERROR;
