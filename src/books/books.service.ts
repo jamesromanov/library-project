@@ -66,9 +66,9 @@ export class BooksService {
       booksCount = count._all;
     }
 
-    if (booksAll.length && count._all > 1) {
-      await this.redis.set(`books:page:${page}`, booksAll);
-      await this.redis.set(`totalBooks:count`, count._all);
+    if (booksAll.length > 0 && count._all >= 1) {
+      await this.redis.set(`books:page:${page}`, booksAll, 60);
+      await this.redis.set(`totalBooks:count`, count._all, 60);
     }
 
     const totalPages = Math.ceil(booksCount / limit);
