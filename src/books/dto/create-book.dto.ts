@@ -1,32 +1,51 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsString, Max } from 'class-validator';
 import { Languages } from '../languages';
 import { Transform, Type } from 'class-transformer';
 import { parse } from 'path';
+import { escape } from 'querystring';
 
 export class CreateBookDto {
-  @ApiProperty({ type: 'string', default: 'Sariq devni minib' })
+  @ApiProperty({
+    type: 'string',
+    default: 'Sariq devni minib',
+    description: 'Kitob nomi',
+  })
   @IsNotEmpty()
   @IsString()
   title: string;
 
-  @ApiProperty({ type: 'string', default: "Xudoyberdi To'xtaboyev" })
+  @ApiProperty({
+    type: 'string',
+    default: "Xudoyberdi To'xtaboyev",
+    description: 'Kitob aftori',
+  })
   @IsNotEmpty()
   @IsString()
   author: string;
 
-  @ApiProperty({ type: 'string', format: 'binary', required: true })
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    required: true,
+    description: 'Kitob rasmi',
+  })
   image: Express.Multer.File;
 
-  @ApiProperty({ type: 'number', default: 2025 })
+  @ApiProperty({
+    type: 'number',
+    default: 2025,
+    description: 'Kitob chiqarilgan sanasi',
+  })
   @Type(() => Number)
   @IsInt()
   @Transform(({ value }) => {
     return parseInt(value);
   })
+  @Max(2025)
   publishedYear: number;
 
-  @ApiProperty({ type: 'number', default: 120 })
+  @ApiProperty({ type: 'number', default: 120, description: 'Kitob narxi' })
   @Transform(({ value }) => {
     return parseInt(value);
   })
@@ -34,16 +53,25 @@ export class CreateBookDto {
   @IsInt()
   price: number;
 
-  @ApiProperty({ type: 'string', required: false, default: "Bu zo'r kitob" })
+  @ApiProperty({
+    type: 'string',
+    required: false,
+    default: "Bu zo'r kitob",
+    description: 'Kitob haqida',
+  })
   @IsString()
   description?: string;
 
-  @ApiProperty({ type: 'string', default: 'pdf' })
+  @ApiProperty({ type: 'string', default: 'pdf', description: 'Kitob formati' })
   @IsNotEmpty()
   @IsString()
   format: string;
 
-  @ApiProperty({ type: 'number', default: 120 })
+  @ApiProperty({
+    type: 'number',
+    default: 120,
+    description: 'Kitob betlari soni',
+  })
   @Type(() => Number)
   @IsInt()
   @Transform(({ value }) => {
@@ -51,6 +79,11 @@ export class CreateBookDto {
   })
   pages: number;
 
-  @ApiProperty({ type: 'string', enum: Languages, default: Languages.UZ })
+  @ApiProperty({
+    type: 'string',
+    enum: Languages,
+    default: Languages.UZ,
+    description: 'Kitob tili',
+  })
   language: Languages;
 }

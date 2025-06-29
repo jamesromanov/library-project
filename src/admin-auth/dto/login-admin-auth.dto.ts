@@ -12,6 +12,7 @@ export class LoginAdminAuthDto {
   @ApiProperty({
     type: 'string',
     default: 'exmaple@gmail.com',
+    description: 'Admin emaili',
   })
   @IsNotEmpty()
   @IsString()
@@ -24,6 +25,7 @@ export class LoginAdminAuthDto {
   @ApiProperty({
     type: 'string',
     default: 'kuchliParol1:!',
+    description: 'Admin paroli',
   })
   @IsNotEmpty()
   @IsString()

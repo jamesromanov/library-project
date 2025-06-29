@@ -10,13 +10,18 @@ import {
 import { AdminRole } from '../admin.role';
 
 export class CreateAdminAuthDto {
-  @ApiProperty({ type: 'string', default: 'Asilbek' })
+  @ApiProperty({
+    type: 'string',
+    default: 'Asilbek',
+    description: 'Admin ismi',
+  })
   @IsString()
   name: string;
 
   @ApiProperty({
     type: 'string',
     default: 'exmaple@gmail.com',
+    description: "Admin emaili"
   })
   @IsNotEmpty()
   @IsString()
@@ -29,6 +34,7 @@ export class CreateAdminAuthDto {
   @ApiProperty({
     type: 'string',
     default: 'kuchliParol1:!',
+    description: "Admin paroli"
   })
   @IsNotEmpty()
   @IsString()
@@ -39,7 +45,7 @@ export class CreateAdminAuthDto {
   })
   password: string;
 
-  @ApiProperty({ type: 'string', default: AdminRole.ADMIN })
+  @ApiProperty({ type: 'string', default: AdminRole.ADMIN, description: "Admin role"})
   @IsNotEmpty()
   @IsEnum(AdminRole, { message: "Role xato kiritildi ADMIN bo'lishi kerak." })
   role: AdminRole;
