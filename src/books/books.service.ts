@@ -3,6 +3,7 @@ import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Book } from 'generated/prisma';
 
 @Injectable()
 export class BooksService {
@@ -14,7 +15,6 @@ export class BooksService {
     createBookDto.pages = Number(createBookDto.pages);
     createBookDto.price = Number(createBookDto.price);
     createBookDto.publishedYear = Number(createBookDto.publishedYear);
-
     await this.cloudinaryService
       .uploadImage(image)
       .then(async (data) => {
@@ -25,7 +25,7 @@ export class BooksService {
       .catch(() => {
         throw new BadRequestException('Yaroqsiz file turi');
       });
-    return 'Muvaffaqiyatli saqlandi';
+    return "Muvaffaqiyatli qo'shildi";
   }
 
   findAll() {
