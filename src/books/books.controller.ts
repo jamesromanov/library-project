@@ -12,14 +12,31 @@ import {
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
-import { ApiConsumes } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiConsumes,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiUnauthorizedResponse,
+  ApiUnprocessableEntityResponse,
+} from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('admin/books')
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
-  @Post()
+  @Post('add')
+  @ApiOperation({
+    summary: "kitob qo'shish faqat adminlar uchun",
+    description: "kitob qo'shish rasmi bilan faqat adminlar uchun",
+  })
+  @ApiCreatedResponse({ description: "Muvaffaqiyatli qo'shildi" })
+  @ApiUnprocessableEntityResponse({
+    description: "Xato tipdagi ma'lumot kiritildi",
+  })
+  @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
+  @ApiUnauthorizedResponse({ description: 'Token yaroqsiz yoki topilmadi' })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('image'))
   create(

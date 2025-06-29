@@ -2,19 +2,30 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class BooksService {
-  constructor(private cloudinaryService: CloudinaryService) {}
+  constructor(
+    private cloudinaryService: CloudinaryService,
+    private readonly prisma: PrismaService,
+  ) {}
   async create(createBookDto: CreateBookDto, image: Express.Multer.File) {
+    createBookDto.pages = Number(createBookDto.pages);
+    createBookDto.price = Number(createBookDto.price);
+    createBookDto.publishedYear = Number(createBookDto.publishedYear);
+
     await this.cloudinaryService
       .uploadImage(image)
-      .then((data) => (createBookDto.image = data.secure_url))
+      .then(async (data) => {
+        await this.prisma.book.create({
+          data: { ...createBookDto, image: data.secure_url },
+        });
+      })
       .catch(() => {
         throw new BadRequestException('Yaroqsiz file turi');
       });
-    console.log(createBookDto);
-    return 'This action adds a new book';
+    return 'Muvaffaqiyatli saqlandi';
   }
 
   findAll() {
