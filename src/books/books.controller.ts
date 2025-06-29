@@ -16,7 +16,10 @@ import {
   ApiBadRequestResponse,
   ApiConsumes,
   ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiUnauthorizedResponse,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
@@ -37,6 +40,7 @@ export class BooksController {
   })
   @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
   @ApiUnauthorizedResponse({ description: 'Token yaroqsiz yoki topilmadi' })
+  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('image'))
   create(
@@ -46,7 +50,17 @@ export class BooksController {
     return this.booksService.create(createBookDto, image);
   }
 
-  @Get()
+  @Get('get')
+  @ApiOperation({
+    summary: 'barcha kitoblarni olish',
+    description: 'barcha kitoblarni olish pagination orqali',
+  })
+  @ApiOkResponse({ description: 'Muvaffaqiyatli olindi' })
+  @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
+  @ApiUnauthorizedResponse({ description: 'Token yaroqsiz yoki topilmadi' })
+  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
+  @ApiQuery({ name: 'limit', type: 'number' })
+  @ApiQuery({ name: 'page', type: 'string' })
   findAll() {
     return this.booksService.findAll();
   }

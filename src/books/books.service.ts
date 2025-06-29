@@ -3,7 +3,6 @@ import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Book } from 'generated/prisma';
 
 @Injectable()
 export class BooksService {
