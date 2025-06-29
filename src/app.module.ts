@@ -12,6 +12,7 @@ import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import * as path from 'path';
 import { RequestLoggerModule } from './request-logger/request-logger.module';
+import { BooksModule } from './books/books.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { RequestLoggerModule } from './request-logger/request-logger.module';
       ),
     }),
     RequestLoggerModule,
+    BooksModule,
   ],
   providers: [
     {

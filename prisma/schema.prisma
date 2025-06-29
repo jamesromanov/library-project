@@ -33,7 +33,7 @@ model Book {
   price Int
   description String?
   format String @default("pdf")
-  pages String
+  pages Int
   language Languages
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
