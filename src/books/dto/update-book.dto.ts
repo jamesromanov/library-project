@@ -1,6 +1,6 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { CreateBookDto } from './create-book.dto';
-import { IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsInt, IsOptional, IsString } from 'class-validator';
 import { Languages } from '../languages';
 import { Type } from 'class-transformer';
 
@@ -21,12 +21,14 @@ export class UpdateBookDto extends PartialType(CreateBookDto) {
 
   @ApiProperty({ type: 'number', default: 2025 })
   @IsOptional()
-  @IsNumber()
+  @IsInt()
+  @Type(() => Number)
   publishedYear?: number;
 
   @ApiProperty({ type: 'number', default: 120 })
   @IsOptional()
-  @IsNumber()
+  @IsInt()
+  @Type(() => Number)
   price?: number;
 
   @ApiProperty({ type: 'string', required: false, default: "Bu zo'r kitob" })
@@ -41,7 +43,8 @@ export class UpdateBookDto extends PartialType(CreateBookDto) {
 
   @ApiProperty({ type: 'number', default: 120 })
   @IsOptional()
-  @IsNumber()
+  @IsInt()
+  @Type(() => Number)
   pages?: number;
 
   @ApiProperty({ type: 'string', enum: Languages, default: Languages.UZ })
