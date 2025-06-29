@@ -13,6 +13,7 @@ import * as winston from 'winston';
 import * as path from 'path';
 import { RequestLoggerModule } from './request-logger/request-logger.module';
 import { BooksModule } from './books/books.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { BooksModule } from './books/books.module';
     }),
     RequestLoggerModule,
     BooksModule,
+    CloudinaryModule,
   ],
   providers: [
     {
