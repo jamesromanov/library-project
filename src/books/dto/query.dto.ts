@@ -2,10 +2,10 @@ import { Type } from 'class-transformer';
 import { IsInt } from 'class-validator';
 
 export class QueryDto {
-  @IsInt()
   @Type(() => Number)
+  @IsInt()
   limit: number;
-  @IsInt()
   @Type(() => Number)
+  @IsInt()
   page: number;
 }

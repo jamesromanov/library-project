@@ -8,6 +8,7 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
@@ -24,6 +25,7 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { QueryDto } from './dto/query.dto';
 
 @Controller('admin/books')
 export class BooksController {
@@ -61,8 +63,8 @@ export class BooksController {
   @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @ApiQuery({ name: 'limit', type: 'number' })
   @ApiQuery({ name: 'page', type: 'string' })
-  findAll() {
-    return this.booksService.findAll();
+  findAll(@Query() query: QueryDto) {
+    return this.booksService.findAll(query);
   }
 
   @Get(':id')
