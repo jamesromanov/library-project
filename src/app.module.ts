@@ -14,6 +14,7 @@ import * as path from 'path';
 import { RequestLoggerModule } from './request-logger/request-logger.module';
 import { BooksModule } from './books/books.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { NewsModule } from './news/news.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     RequestLoggerModule,
     BooksModule,
     CloudinaryModule,
+    NewsModule,
   ],
   providers: [
     {

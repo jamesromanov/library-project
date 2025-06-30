@@ -23,6 +23,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiProperty,
   ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -32,6 +33,14 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { QueryDto } from './dto/query.dto';
 import { Languages } from 'generated/prisma';
 import { BooleanValidationPipe } from './dto/active.validation.pipe';
+import { reduce } from 'rxjs';
+import { IsString } from 'class-validator';
+
+export class Data {
+  @ApiProperty({ example: 'sasasa' })
+  @IsString()
+  data: string;
+}
 
 @Controller('admin/books')
 export class BooksController {
@@ -146,5 +155,16 @@ export class BooksController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.booksService.remove(id);
+  }
+
+  @Get('get/sothig')
+  @ApiQuery({ name: 'search', type: 'string' })
+  get(@Query() query: { search: string }) {
+    return this.booksService.get(query);
+  }
+
+  @Post('addd/s/s')
+  add(@Body() data: CreateBookDto) {
+    return this.booksService.add(data);
   }
 }

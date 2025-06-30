@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  Search,
 } from '@nestjs/common';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
@@ -14,6 +15,7 @@ import { combineLatest, NotFoundError, of, take } from 'rxjs';
 import { listenerCount, off } from 'process';
 import { compareSync } from 'bcrypt';
 import { Languages } from './languages';
+import { Data } from './books.controller';
 
 @Injectable()
 export class BooksService {
@@ -237,5 +239,14 @@ export class BooksService {
       totalDataCount: booksCount,
       data: books,
     };
+  }
+  async get(query: { search: string }) {
+    const data = await this.redis.getFroAutocomplete(query.search);
+    console.log(data);
+    return data;
+  }
+
+  async add(data: CreateBookDto) {
+    return await this.redis.addForAutoComplete(data);
   }
 }
