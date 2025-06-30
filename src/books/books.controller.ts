@@ -26,6 +26,7 @@ import {
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { QueryDto } from './dto/query.dto';
+import { Languages } from 'generated/prisma';
 
 @Controller('admin/books')
 export class BooksController {
@@ -63,6 +64,12 @@ export class BooksController {
   @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @ApiQuery({ name: 'limit', type: 'number' })
   @ApiQuery({ name: 'page', type: 'string' })
+  @ApiQuery({
+    name: 'language',
+    type: 'enum',
+    enum: Languages,
+    required: false,
+  })
   findAll(@Query() query: QueryDto) {
     return this.booksService.findAll(query);
   }
