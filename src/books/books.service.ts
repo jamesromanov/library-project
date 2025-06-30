@@ -120,15 +120,13 @@ export class BooksService {
     return bookExists;
   }
 
+  // BOOK update
   async update(
     id: string,
     updateBookDto: UpdateBookDto,
     image: Express.Multer.File,
   ) {
     const bookExists = await this.findOne(id);
-    console.log(updateBookDto);
-    // const active = updateBookDto.active == true ? true : false;
-    // swagger multipart form data converts eveything to string
     updateBookDto.pages = Number(updateBookDto.pages) || undefined;
     updateBookDto.author = updateBookDto.author || undefined;
     updateBookDto.description = updateBookDto.description || undefined;
@@ -139,18 +137,21 @@ export class BooksService {
     updateBookDto.publishedYear =
       Number(updateBookDto.publishedYear) || undefined;
     updateBookDto.title = updateBookDto.title || undefined;
-    const imgUrl = image?.buffer
-      ? await this.cloudinaryService
-          .uploadImage(image)
-          .then(async (data) => {
-            return data.secure_url;
-          })
-          .catch((err) => {
-            console.log(err);
-            throw new BadRequestException('Rasm yuklashda xatolik');
-          })
-      : undefined;
 
+    const imgUrl =
+      image !== undefined
+        ? await this.cloudinaryService
+            .uploadImage(image)
+            .then(async (data) => {
+              return data.secure_url;
+            })
+            .catch((err) => {
+              console.log(err);
+              throw new BadRequestException('Rasm yuklashda xatolik');
+            })
+        : undefined;
+
+    console.log(imgUrl);
     console.log(updateBookDto, image);
 
     const updatedBook = await this.prisma.book.update({
