@@ -109,11 +109,13 @@ export class BooksService {
     };
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, active?: boolean) {
     const bookCache = await this.redis.get(`book:id:${id}`);
-    console.log(bookCache);
+    console.log(bookCache, 'bookcache');
     if (bookCache) return JSON.parse(bookCache);
-    const bookExists = await this.prisma.book.findUnique({ where: { id } });
+    const bookExists = await this.prisma.book.findUnique({
+      where: { id, active: active || true },
+    });
 
     if (!bookExists) throw new NotFoundException('Bu id dagi kitob topilmadi.');
     await this.redis.set(`book:id:${id}`, bookExists, 60);
@@ -166,8 +168,10 @@ export class BooksService {
   }
   // BOOK delete soft delete
   async remove(id: string) {
-    const bookExists = await this.findOne(id);
+    const bookExists = await this.findOne(id, true);
     await this.update(bookExists.id, { active: false });
+    await this.redis.del(`book:id:${id}`);
+
     return "Muvaffaqiyatli o'chirildi";
   }
 }
