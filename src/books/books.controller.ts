@@ -24,6 +24,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
+  ApiTags,
   ApiUnauthorizedResponse,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
@@ -56,6 +57,26 @@ export class BooksController {
     @UploadedFile() image: Express.Multer.File,
   ) {
     return this.booksService.create(createBookDto, image);
+  }
+  @ApiOperation({
+    summary: 'kitoblarni olish',
+    description: 'kitoblarni olish pagination orqali barcha uchun',
+  })
+  @ApiOkResponse({ description: 'Muvaffiqaytli olindi' })
+  @ApiUnauthorizedResponse({ description: 'Token yaroqsiz yoki topilmadi' })
+  @ApiBadRequestResponse({ description: 'Xato malumot kiritildi' })
+  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
+  @ApiQuery({ name: 'limit', type: 'number' })
+  @ApiQuery({ name: 'page', type: 'number' })
+  @ApiQuery({
+    name: 'language',
+    type: 'enum',
+    enum: Languages,
+    required: false,
+  })
+  @Get('getBooks/all')
+  ges(@Query() query: QueryDto) {
+    return this.booksService.getAllBooks(query);
   }
 
   @Get('get')
@@ -96,7 +117,7 @@ export class BooksController {
   @Patch(':id')
   @ApiOperation({
     summary: 'kitobni yangilash',
-    description: 'kitoblarni id orqali yangilash',
+    description: 'kitoblarni id orqali yangilash adminlar uchun',
   })
   @ApiOkResponse({ description: 'Muvaffatiqyatli yangilandi' })
   @ApiBadRequestResponse({ description: 'Id xato kiritildi' })
