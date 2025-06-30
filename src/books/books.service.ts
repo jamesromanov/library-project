@@ -126,28 +126,43 @@ export class BooksService {
     image: Express.Multer.File,
   ) {
     const bookExists = await this.findOne(id);
-    updateBookDto.pages = Number(updateBookDto.pages) || undefined;
-    updateBookDto.author =
-      updateBookDto.author === '' ? undefined : updateBookDto.author;
-    updateBookDto.description =
-      updateBookDto.description === '' ? undefined : updateBookDto.description;
-    updateBookDto.format =
-      updateBookDto.format === '' ? undefined : updateBookDto.format;
     console.log(updateBookDto);
-    // updateBookDto.language =
-    //   updateBookDto.language === '' ? undefined : updateBookDto.language;
+    // const active = updateBookDto.active == true ? true : false;
+    // swagger multipart form data converts eveything to string
+    updateBookDto.pages = Number(updateBookDto.pages) || undefined;
+    updateBookDto.author = updateBookDto.author || undefined;
+    updateBookDto.description = updateBookDto.description || undefined;
+    updateBookDto.format = updateBookDto.format || undefined;
+    updateBookDto.language = updateBookDto.language || undefined;
+    updateBookDto.pages = Number(updateBookDto.pages) || undefined;
+    updateBookDto.price = Number(updateBookDto.price) || undefined;
+    updateBookDto.publishedYear =
+      Number(updateBookDto.publishedYear) || undefined;
+    updateBookDto.title = updateBookDto.title || undefined;
+    const imgUrl = image?.buffer
+      ? await this.cloudinaryService
+          .uploadImage(image)
+          .then(async (data) => {
+            return data.secure_url;
+          })
+          .catch((err) => {
+            console.log(err);
+            throw new BadRequestException('Rasm yuklashda xatolik');
+          })
+      : undefined;
 
-    let updatedBook: Book;
-    // await this.cloudinaryService.uploadImage(image).then(async (data) => {
-    //   updatedBook = await this.prisma.book.update({
-    //     where: { id: bookExists.id },
-    //     data: {
-    //       ...updateBookDto,
-    //       image: data.secure_url,
-    //     },
-    //   });
-    // });
-    // return updatedBook;
+    console.log(updateBookDto, image);
+
+    const updatedBook = await this.prisma.book.update({
+      where: { id: bookExists.id },
+      data: {
+        ...updateBookDto,
+        // active,
+        image: imgUrl,
+      },
+    });
+    await this.redis.del(`book:id:${id}`);
+    return updatedBook;
   }
 
   remove(id: number) {

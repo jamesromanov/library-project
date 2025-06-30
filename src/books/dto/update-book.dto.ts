@@ -99,14 +99,15 @@ export class UpdateBookDto extends PartialType(CreateBookDto) {
     required: false,
     description: 'Kitob tili',
   })
+  @IsOptional()
   language?: Languages;
   @ApiProperty({
     type: Boolean,
-    default: true,
     description: 'Book statusi',
     required: false,
   })
   @IsOptional()
+  @Type(() => Boolean)
   @IsBoolean()
-  active?: boolean = true;
+  active?: boolean;
 }

@@ -9,12 +9,14 @@ import {
   UseInterceptors,
   UploadedFile,
   Query,
+  ValidationPipe,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import {
   ApiBadRequestResponse,
+  ApiBody,
   ApiConsumes,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
@@ -28,6 +30,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { QueryDto } from './dto/query.dto';
 import { Languages } from 'generated/prisma';
+import { BooleanValidationPipe } from './dto/active.validation.pipe';
 
 @Controller('admin/books')
 export class BooksController {
@@ -101,12 +104,21 @@ export class BooksController {
   @ApiUnauthorizedResponse({ description: 'Token yaroqsiz yoki topilmadi' })
   @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: UpdateBookDto })
   @UseInterceptors(FileInterceptor('image'))
   update(
     @Param('id') id: string,
-    @Body() updateBookDto: UpdateBookDto,
+    @Body()
+    updateBookDto: UpdateBookDto,
     @UploadedFile() image: Express.Multer.File,
   ) {
+    updateBookDto.active = updateBookDto.active
+      ? new BooleanValidationPipe().transform(updateBookDto.active.toString(), {
+          type: 'body',
+          data: 'active',
+        })
+      : undefined;
+    console.log(updateBookDto.active, 'controller');
     return this.booksService.update(id, updateBookDto, image);
   }
 

@@ -33,7 +33,7 @@ export class CreateBookDto {
   image: Express.Multer.File;
 
   @ApiProperty({
-    type: Number,
+    type: "number",
     default: 2025,
     description: 'Kitob chiqarilgan sanasi',
   })
@@ -45,7 +45,7 @@ export class CreateBookDto {
   @Max(2025)
   publishedYear: number;
 
-  @ApiProperty({ type: Number, default: 120, description: 'Kitob narxi' })
+  @ApiProperty({ type: "number", default: 120, description: 'Kitob narxi' })
   @Transform(({ value }) => {
     return parseInt(value);
   })
@@ -68,7 +68,7 @@ export class CreateBookDto {
   format: string;
 
   @ApiProperty({
-    type: Number,
+    type: "number",
     default: 120,
     description: 'Kitob betlari soni',
   })
@@ -80,7 +80,7 @@ export class CreateBookDto {
   pages: number;
 
   @ApiProperty({
-    type: Boolean,
+    type: 'string',
     enum: Languages,
     default: Languages.UZ,
     description: 'Kitob tili',
