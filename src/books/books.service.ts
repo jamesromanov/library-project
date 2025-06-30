@@ -124,7 +124,7 @@ export class BooksService {
   async update(
     id: string,
     updateBookDto: UpdateBookDto,
-    image: Express.Multer.File,
+    image?: Express.Multer.File,
   ) {
     const bookExists = await this.findOne(id);
     updateBookDto.pages = Number(updateBookDto.pages) || undefined;
@@ -158,15 +158,16 @@ export class BooksService {
       where: { id: bookExists.id },
       data: {
         ...updateBookDto,
-        // active,
         image: imgUrl,
       },
     });
     await this.redis.del(`book:id:${id}`);
     return updatedBook;
   }
-
-  remove(id: number) {
-    return `This action removes a #${id} book`;
+  // BOOK delete soft delete
+  async remove(id: string) {
+    const bookExists = await this.findOne(id);
+    await this.update(bookExists.id, { active: false });
+    return "Muvaffaqiyatli o'chirildi";
   }
 }
