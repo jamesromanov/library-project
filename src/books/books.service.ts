@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
@@ -6,7 +10,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { QueryDto } from './dto/query.dto';
 import { RedisService } from 'src/redis/redis.service';
 import { Book } from 'generated/prisma';
-import { of, take } from 'rxjs';
+import { NotFoundError, of, take } from 'rxjs';
 import { listenerCount, off } from 'process';
 import { compareSync } from 'bcrypt';
 import { Languages } from './languages';
@@ -23,22 +27,30 @@ export class BooksService {
     createBookDto.pages = Number(createBookDto.pages);
     createBookDto.price = Number(createBookDto.price);
     createBookDto.publishedYear = Number(createBookDto.publishedYear);
+    const active = createBookDto.active == true ? true : false;
     await this.cloudinaryService
       .uploadImage(image)
       .then(async (data) => {
         await this.prisma.book.create({
-          data: { ...createBookDto, image: data.secure_url },
+          data: {
+            ...createBookDto,
+            image: data.secure_url,
+            active,
+          },
         });
       })
       .catch((err) => {
         console.log(err);
-        throw new BadRequestException('Yaroqsiz file turi');
+        throw new BadRequestException('Rasm yoki kitob yaratishda   xatolik');
       });
+
     return "Muvaffaqiyatli qo'shildi";
   }
   // FIND all methond by pagination
   async findAll(query: QueryDto) {
-    const { limit, page, language } = query;
+    const page = query.page || 1;
+    const limit = query.limit;
+    const language = query.language;
     if (limit < 1 || page < 1)
       throw new BadRequestException(
         `${limit < 1 ? 'Limit' : 'Page'} manfiy bo'lishi mumkin emas.`,
@@ -97,8 +109,15 @@ export class BooksService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} book`;
+  async findOne(id: string) {
+    const bookCache = await this.redis.get(`book:id:${id}`);
+    console.log(bookCache);
+    if (bookCache) return JSON.parse(bookCache);
+    const bookExists = await this.prisma.book.findUnique({ where: { id } });
+
+    if (!bookExists) throw new NotFoundException('Bu id dagi kitob topilmadi.');
+    await this.redis.set(`book:id:${id}`, bookExists, 60);
+    return bookExists;
   }
 
   update(id: number, updateBookDto: UpdateBookDto) {

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsString, Max } from 'class-validator';
+import { IsBoolean, IsInt, IsNotEmpty, IsString, Max } from 'class-validator';
 import { Languages } from '../languages';
 import { Transform, Type } from 'class-transformer';
 import { parse } from 'path';
@@ -86,4 +86,9 @@ export class CreateBookDto {
     description: 'Kitob tili',
   })
   language: Languages;
+
+  @ApiProperty({ type: 'boolean', default: true, description: 'Book statusi' })
+  @Type(() => Boolean)
+  @IsBoolean()
+  active: boolean;
 }
