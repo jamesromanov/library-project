@@ -10,13 +10,14 @@ import {
   MAX,
 } from 'class-validator';
 import { Languages } from '../languages';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 export class UpdateBookDto extends PartialType(CreateBookDto) {
   @ApiProperty({
     type: 'string',
     default: 'Sariq devni minib',
     description: 'Kitob nomi',
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -26,6 +27,7 @@ export class UpdateBookDto extends PartialType(CreateBookDto) {
     type: 'string',
     default: "Xudoyberdi To'xtaboyev",
     description: 'Kitob aftori',
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -36,18 +38,24 @@ export class UpdateBookDto extends PartialType(CreateBookDto) {
     format: 'binary',
     default: 'image/url',
     description: 'Kitob rasmi',
+    required: false,
   })
   @IsOptional()
   image?: Express.Multer.File;
 
-  @ApiProperty({ type: 'number', default: 2025 })
+  @ApiProperty({ type: Number, default: 2025, required: false })
   @IsOptional()
   @IsInt()
   @Max(2025)
   @Type(() => Number)
   publishedYear?: number;
 
-  @ApiProperty({ type: 'number', default: 120, description: 'Kitob narxi' })
+  @ApiProperty({
+    type: Number,
+    default: 120,
+    description: 'Kitob narxi',
+    required: false,
+  })
   @IsOptional()
   @IsNumber()
   @Type(() => Number)
@@ -63,28 +71,41 @@ export class UpdateBookDto extends PartialType(CreateBookDto) {
   @IsString()
   description?: string;
 
-  @ApiProperty({ type: 'string', default: 'pdf', description: 'Kitob formati' })
+  @ApiProperty({
+    type: 'string',
+    default: 'pdf',
+    description: 'Kitob formati',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   format?: string;
 
   @ApiProperty({
-    type: 'number',
+    type: Number,
     default: 120,
     description: 'Kitob betlari soni',
+    required: false,
   })
   @IsOptional()
   @IsInt()
   @Type(() => Number)
+  pages?: number;
+
   @ApiProperty({
     type: 'string',
     enum: Languages,
     default: Languages.UZ,
+    required: false,
     description: 'Kitob tili',
   })
-  @IsOptional()
   language?: Languages;
-  @ApiProperty({ type: 'boolean', default: true, description: 'Book statusi' })
+  @ApiProperty({
+    type: Boolean,
+    default: true,
+    description: 'Book statusi',
+    required: false,
+  })
   @IsOptional()
   @IsBoolean()
   active?: boolean = true;

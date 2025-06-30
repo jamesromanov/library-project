@@ -18,6 +18,7 @@ import {
   ApiConsumes,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
@@ -35,7 +36,8 @@ export class BooksController {
   @Post('add')
   @ApiOperation({
     summary: "kitob qo'shish faqat adminlar uchun",
-    description: "kitob qo'shish rasmi bilan faqat adminlar uchun",
+    description:
+      "kitob qo'shish rasmi bilan faqat adminlar uchun adminlar uchun",
   })
   @ApiCreatedResponse({ description: "Muvaffaqiyatli qo'shildi" })
   @ApiUnprocessableEntityResponse({
@@ -56,7 +58,8 @@ export class BooksController {
   @Get('get')
   @ApiOperation({
     summary: 'barcha kitoblarni olish',
-    description: 'barcha kitoblarni olish pagination orqali',
+    description:
+      'barcha kitoblarni olish pagination orqali adminlar uchun adminlar uchun',
   })
   @ApiOkResponse({ description: 'Muvaffaqiyatli olindi' })
   @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
@@ -73,15 +76,38 @@ export class BooksController {
   findAll(@Query() query: QueryDto) {
     return this.booksService.findAll(query);
   }
-
+  @ApiOperation({
+    summary: 'kitobni id orqali olish',
+    description: 'kitoblarni id orqali olish adminlar uchun',
+  })
+  @ApiOkResponse({ description: 'Muvaffiqaytli olindi' })
+  @ApiBadRequestResponse({ description: 'Id xato kiritildi' })
+  @ApiNotFoundResponse({ description: "Hech qanday ma'lumot topilmadi" })
+  @ApiUnauthorizedResponse({ description: 'Token yaroqsiz yoki topilmadi' })
+  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.booksService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBookDto: UpdateBookDto) {
-    return this.booksService.update(+id, updateBookDto);
+  @ApiOperation({
+    summary: 'kitobni yangilash',
+    description: 'kitoblarni id orqali yangilash',
+  })
+  @ApiOkResponse({ description: 'Muvaffatiqyatli yangilandi' })
+  @ApiBadRequestResponse({ description: 'Id xato kiritildi' })
+  @ApiNotFoundResponse({ description: "Hech qanday ma'lumot topilmadi" })
+  @ApiUnauthorizedResponse({ description: 'Token yaroqsiz yoki topilmadi' })
+  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('image'))
+  update(
+    @Param('id') id: string,
+    @Body() updateBookDto: UpdateBookDto,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    return this.booksService.update(id, updateBookDto, image);
   }
 
   @Delete(':id')

@@ -120,8 +120,34 @@ export class BooksService {
     return bookExists;
   }
 
-  update(id: number, updateBookDto: UpdateBookDto) {
-    return `This action updates a #${id} book`;
+  async update(
+    id: string,
+    updateBookDto: UpdateBookDto,
+    image: Express.Multer.File,
+  ) {
+    const bookExists = await this.findOne(id);
+    updateBookDto.pages = Number(updateBookDto.pages) || undefined;
+    updateBookDto.author =
+      updateBookDto.author === '' ? undefined : updateBookDto.author;
+    updateBookDto.description =
+      updateBookDto.description === '' ? undefined : updateBookDto.description;
+    updateBookDto.format =
+      updateBookDto.format === '' ? undefined : updateBookDto.format;
+    console.log(updateBookDto);
+    // updateBookDto.language =
+    //   updateBookDto.language === '' ? undefined : updateBookDto.language;
+
+    let updatedBook: Book;
+    // await this.cloudinaryService.uploadImage(image).then(async (data) => {
+    //   updatedBook = await this.prisma.book.update({
+    //     where: { id: bookExists.id },
+    //     data: {
+    //       ...updateBookDto,
+    //       image: data.secure_url,
+    //     },
+    //   });
+    // });
+    // return updatedBook;
   }
 
   remove(id: number) {
