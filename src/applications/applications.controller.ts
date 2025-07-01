@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ApplicationsService } from './applications.service';
 import { CreateApplicationDto } from './dto/create-application.dto';
@@ -14,10 +15,14 @@ import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
+  ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiUnauthorizedResponse,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
+import { Languages } from 'src/books/languages';
+import { QueryDto } from './dto/query,dto';
 
 @Controller('applications')
 export class ApplicationsController {
@@ -39,9 +44,20 @@ export class ApplicationsController {
     return this.applicationsService.create(createApplicationDto);
   }
 
-  @Get()
-  findAll() {
-    return this.applicationsService.findAll();
+  @ApiOperation({
+    summary: 'barcha kitoblarni olish',
+    description:
+      'barcha kitoblarni olish pagination orqali adminlar uchun adminlar uchun',
+  })
+  @ApiOkResponse({ description: 'Muvaffaqiyatli olindi' })
+  @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
+  @ApiUnauthorizedResponse({ description: 'Token yaroqsiz yoki topilmadi' })
+  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
+  @ApiQuery({ name: 'limit', type: 'number' })
+  @ApiQuery({ name: 'page', type: 'string' })
+  @Get('all')
+  findAll(@Query() query: QueryDto) {
+    return this.applicationsService.findAll(query);
   }
 
   @Get(':id')
