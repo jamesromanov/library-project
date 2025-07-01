@@ -31,7 +31,7 @@ export class ApplicationsController {
 
   @ApiOperation({
     summary: "zayavka qo'shish",
-    description: "kitob qo'shish rasmi bilan faqat adminlar uchun",
+    description: "zayavka qo'shish rasmi bilan faqat adminlar uchun",
   })
   @ApiCreatedResponse({ description: "Muvaffaqiyatli qo'shildi" })
   @ApiUnprocessableEntityResponse({
@@ -46,7 +46,7 @@ export class ApplicationsController {
   }
 
   @ApiOperation({
-    summary: 'barcha kitoblarni olish',
+    summary: 'barcha zayavkani olish',
     description:
       'barcha kitoblarni olish pagination orqali adminlar uchun adminlar uchun',
   })
@@ -62,8 +62,8 @@ export class ApplicationsController {
   }
 
   @ApiOperation({
-    summary: 'application id orqali olish',
-    description: 'application id orqali olish adminlar uchun',
+    summary: 'zayavkani id orqali olish',
+    description: 'zayavka id orqali olish adminlar uchun',
   })
   @ApiOkResponse({ description: 'Muvaffiqaytli olindi' })
   @ApiBadRequestResponse({ description: 'Id xato kiritildi' })
@@ -92,8 +92,19 @@ export class ApplicationsController {
     return this.applicationsService.update(id, updateApplicationDto);
   }
 
+  @ApiOperation({
+    summary: 'zayavkalarni ochirish',
+    description: 'zayavkalarni id orqali ochirish',
+  })
+  @ApiUnprocessableEntityResponse({
+    description: "Xato tipdagi ma'lumot kiritildi",
+  })
+  @ApiOkResponse({ description: 'Muvaffaqiyatli ochirildi' })
+  @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
+  @ApiUnauthorizedResponse({ description: 'Token yaroqsiz yoki topilmadi' })
+  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.applicationsService.remove(+id);
+    return this.applicationsService.remove(id);
   }
 }

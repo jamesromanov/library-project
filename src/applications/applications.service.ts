@@ -109,7 +109,11 @@ export class ApplicationsService {
     return updatedApplication;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} application`;
+  async remove(id: string) {
+    const applicationExists = await this.findOne(id);
+    await this.update(applicationExists.id, { active: false });
+    await this.redis.del(`application:id:${id}`);
+
+    return "Muvaffaqiyatli o'chirildi";
   }
 }
