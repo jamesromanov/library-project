@@ -14,7 +14,7 @@ export class UpdateApplicationDto extends PartialType(CreateApplicationDto) {
 
   @ApiProperty({
     type: 'string',
-    default: '+998999999999',
+    default: '998999999999',
     description: 'Zayavka nomeri',
   })
   @IsString()
