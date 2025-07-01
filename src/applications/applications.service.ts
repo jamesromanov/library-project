@@ -1,9 +1,14 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateApplicationDto } from './dto/create-application.dto';
 import { UpdateApplicationDto } from './dto/update-application.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RedisService } from 'src/redis/redis.service';
 import { QueryDto } from './dto/query,dto';
+import { application } from 'express';
 
 @Injectable()
 export class ApplicationsService {
@@ -77,11 +82,20 @@ export class ApplicationsService {
       totalDataCount: applicationCount,
       data: applications,
     };
-    return `This action returns all applications`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} application`;
+  async findOne(id: string) {
+    const appCache = await this.redis.get(`application:id:${id}`);
+    console.log(appCache, 'bookcache');
+    if (appCache) return JSON.parse(appCache);
+    const applicationExists = await this.prisma.application.findUnique({
+      where: { id },
+    });
+
+    if (!applicationExists)
+      throw new NotFoundException('Bu id dagi application topilmadi.');
+    await this.redis.set(`application:id:${id}`, applicationExists, 60);
+    return applicationExists;
   }
 
   update(id: number, updateApplicationDto: UpdateApplicationDto) {

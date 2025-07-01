@@ -15,6 +15,7 @@ import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
@@ -60,9 +61,18 @@ export class ApplicationsController {
     return this.applicationsService.findAll(query);
   }
 
+  @ApiOperation({
+    summary: 'application id orqali olish',
+    description: 'application id orqali olish adminlar uchun',
+  })
+  @ApiOkResponse({ description: 'Muvaffiqaytli olindi' })
+  @ApiBadRequestResponse({ description: 'Id xato kiritildi' })
+  @ApiNotFoundResponse({ description: "Hech qanday ma'lumot topilmadi" })
+  @ApiUnauthorizedResponse({ description: 'Token yaroqsiz yoki topilmadi' })
+  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.applicationsService.findOne(+id);
+    return this.applicationsService.findOne(id);
   }
 
   @Patch(':id')
