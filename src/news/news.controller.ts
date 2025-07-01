@@ -9,12 +9,14 @@ import {
   UseInterceptors,
   UploadedFile,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { NewsService } from './news.service';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { UpdateNewsDto } from './dto/update-news.dto';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiConsumes,
   ApiCreatedResponse,
@@ -30,7 +32,14 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { BooleanValidationPipe } from 'src/books/dto/active.validation.pipe';
 import { Languages } from 'src/books/languages';
 import { QueryDto } from './query.dto';
+import { JwtGuard } from 'src/guards/jwt.guard';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { AdminRole } from 'src/admin-auth/admin.role';
+import { Roles } from 'src/guards/roles';
 
+@UseGuards(JwtGuard, RolesGuard)
+@Roles(AdminRole.ADMIN)
+@ApiBearerAuth()
 @Controller('news')
 export class NewsController {
   constructor(private readonly newsService: NewsService) {}

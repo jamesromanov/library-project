@@ -7,12 +7,14 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ApplicationsService } from './applications.service';
 import { CreateApplicationDto } from './dto/create-application.dto';
 import { UpdateApplicationDto } from './dto/update-application.dto';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
@@ -23,6 +25,10 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { QueryDto } from './dto/query,dto';
+import { JwtGuard } from 'src/guards/jwt.guard';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { Roles } from 'src/guards/roles';
+import { AdminRole } from 'src/admin-auth/admin.role';
 
 @Controller('applications')
 export class ApplicationsController {
@@ -44,6 +50,9 @@ export class ApplicationsController {
     return this.applicationsService.create(createApplicationDto);
   }
 
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(AdminRole.ADMIN)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'barcha zayavkani olish (adminlar uchun)',
     description:
@@ -60,6 +69,9 @@ export class ApplicationsController {
     return this.applicationsService.findAll(query);
   }
 
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(AdminRole.ADMIN)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'zayavkani id orqali olish (adminlar uchun)',
     description: 'zayavka id orqali olish adminlar uchun',
@@ -74,6 +86,9 @@ export class ApplicationsController {
     return this.applicationsService.findOne(id);
   }
 
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(AdminRole.ADMIN)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'applucation yangilash (adminlar uchun)',
     description: 'application id orqali yangilash adminlar uchun',
@@ -91,6 +106,9 @@ export class ApplicationsController {
     return this.applicationsService.update(id, updateApplicationDto);
   }
 
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(AdminRole.ADMIN)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'zayavkalarni ochirish (adminlar uchun)',
     description: 'zayavkalarni id orqali ochirish',

@@ -1,6 +1,7 @@
 import {
   CanActivate,
   ExecutionContext,
+  Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
@@ -19,6 +20,7 @@ export interface User {
   role: AdminRole;
   createdAt: Date;
 }
+@Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
   canActivate(

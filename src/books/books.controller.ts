@@ -10,12 +10,14 @@ import {
   UploadedFile,
   Query,
   ValidationPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiConsumes,
   ApiCreatedResponse,
@@ -35,6 +37,10 @@ import { Book, Languages } from 'generated/prisma';
 import { BooleanValidationPipe } from './dto/active.validation.pipe';
 import { reduce } from 'rxjs';
 import { IsString } from 'class-validator';
+import { Roles } from 'src/guards/roles';
+import { JwtGuard } from 'src/guards/jwt.guard';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { AdminRole } from 'src/admin-auth/admin.role';
 
 export class Data {
   @ApiProperty({ example: 'sasasa' })
@@ -46,6 +52,9 @@ export class Data {
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(AdminRole.ADMIN)
+  @ApiBearerAuth()
   @Post('add')
   @ApiOperation({
     summary: "kitob qo'shish (adminlar uchun)",
@@ -88,6 +97,9 @@ export class BooksController {
     return this.booksService.getAllBooks(query);
   }
 
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(AdminRole.ADMIN)
+  @ApiBearerAuth()
   @Get('get')
   @ApiOperation({
     summary: 'barcha kitoblarni olish (adminalar uchun)',
@@ -123,6 +135,9 @@ export class BooksController {
     return this.booksService.findOne(id);
   }
 
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(AdminRole.ADMIN)
+  @ApiBearerAuth()
   @Patch(':id')
   @ApiOperation({
     summary: 'kitobni yangilash (adminlar uchun)',
@@ -152,6 +167,9 @@ export class BooksController {
     return this.booksService.update(id, updateBookDto, image);
   }
 
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(AdminRole.ADMIN)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'kitoblani ochirish (adminlar uchun)',
     description: 'kitoblarni id orqali ochirish',
@@ -168,6 +186,9 @@ export class BooksController {
     return this.booksService.remove(id);
   }
 
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(AdminRole.ADMIN)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'kitoblarni nomi orqali olish',
     description: 'kitoblerni nomi orqali qidirish',
