@@ -39,7 +39,6 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /home/ubuntu/library-project
-            npm i -g pm2
             git reset --hard
             git pull origin main
             npm install --production 
