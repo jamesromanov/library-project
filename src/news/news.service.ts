@@ -158,4 +158,67 @@ export class NewsService {
 
     return "Muvaffaqiyatli o'chirildi";
   }
+
+  async getAllnews(query: QueryDto) {
+    console.log(query);
+    const page = query.page || 1;
+    const limit = query.limit || 10;
+    const language = query.language;
+    if (limit < 1 || page < 1)
+      throw new BadRequestException(
+        `${limit < 1 ? 'Limit' : 'Page'} manfiy bo'lishi mumkin emas.`,
+      );
+    const offset = (page - 1) * limit;
+    const queryOptions = {
+      skip: +offset,
+      take: +limit,
+      where: { language, active: true },
+    };
+    let news: any[];
+    let newsCount: number;
+    const cacheNews = await this.redis.get(
+      `news:page:${page}:${limit}:${language}:all`,
+    );
+    const cacheNewsCount = await this.redis.get(
+      `totalNews:count:${language}:all`,
+    );
+
+    const [count, newsAll] = await this.prisma.$transaction([
+      this.prisma.new.count({ where: { language, active: true } }),
+      this.prisma.new.findMany({
+        ...queryOptions,
+        orderBy: [
+          {
+            createdAt: 'asc',
+          },
+        ],
+      }),
+    ]);
+    if (cacheNews && cacheNewsCount) {
+      news = JSON.parse(cacheNews);
+      newsCount = +cacheNewsCount;
+    } else {
+      news = newsAll;
+      newsCount = count;
+    }
+
+    if (newsAll.length > 0 && count >= 1) {
+      await this.redis.set(
+        `news:page:${page}:${limit}:${language}:all`,
+        newsAll,
+        60,
+      );
+      await this.redis.set(`totalNews:count:${language}:all`, count, 60);
+    }
+
+    const totalPages = Math.ceil(newsCount / limit);
+
+    return {
+      currentPage: +page,
+      totalPages,
+      hasNextPage: page < totalPages,
+      totalDataCount: newsCount,
+      data: news,
+    };
+  }
 }

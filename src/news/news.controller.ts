@@ -143,7 +143,7 @@ export class NewsController {
     return this.newsService.remove(id);
   }
 
-  @Get('get')
+  @Get('get/all')
   @ApiOperation({
     summary: 'yangiliklarni olish',
     description:
@@ -161,5 +161,7 @@ export class NewsController {
     enum: Languages,
     required: false,
   })
-  getALlBooks(@Query() query: QueryDto) {}
+  getALlNews(@Query() query: QueryDto) {
+    return this.newsService.getAllnews(query);
+  }
 }
