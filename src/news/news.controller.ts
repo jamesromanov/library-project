@@ -62,8 +62,8 @@ export class NewsController {
   }
 
   @ApiOperation({
-    summary: 'yangiliklarni olish',
-    description: 'yangiliklarni olish pagination orqali barcha uchun',
+    summary: 'barcha yangiliklarni olish',
+    description: 'yangiliklarni olish pagination orqali adminlar uchun',
   })
   @ApiOkResponse({ description: 'Muvaffiqaytli olindi' })
   @ApiUnauthorizedResponse({ description: 'Token yaroqsiz yoki topilmadi' })
@@ -127,8 +127,39 @@ export class NewsController {
     return this.newsService.update(id, updateNewsDto, image);
   }
 
+  @ApiOperation({
+    summary: 'yangiliklarni ochirish',
+    description: 'yangilikarni id orqali ochirish adminlar uchun',
+  })
+  @ApiUnprocessableEntityResponse({
+    description: "Xato tipdagi ma'lumot kiritildi",
+  })
+  @ApiOkResponse({ description: 'Muvaffaqiyatli ochirildi' })
+  @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
+  @ApiUnauthorizedResponse({ description: 'Token yaroqsiz yoki topilmadi' })
+  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.newsService.remove(+id);
+    return this.newsService.remove(id);
   }
+
+  @Get('get')
+  @ApiOperation({
+    summary: 'yangiliklarni olish',
+    description:
+      'barcha kitoblarni olish pagination orqali adminlar uchun adminlar uchun',
+  })
+  @ApiOkResponse({ description: 'Muvaffaqiyatli olindi' })
+  @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
+  @ApiUnauthorizedResponse({ description: 'Token yaroqsiz yoki topilmadi' })
+  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
+  @ApiQuery({ name: 'limit', type: 'number' })
+  @ApiQuery({ name: 'page', type: 'string' })
+  @ApiQuery({
+    name: 'language',
+    type: 'enum',
+    enum: Languages,
+    required: false,
+  })
+  getALlBooks(@Query() query: QueryDto) {}
 }

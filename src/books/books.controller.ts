@@ -152,6 +152,17 @@ export class BooksController {
     return this.booksService.update(id, updateBookDto, image);
   }
 
+  @ApiOperation({
+    summary: 'kitoblani ochirish',
+    description: 'kitoblarni id orqali ochirish',
+  })
+  @ApiUnprocessableEntityResponse({
+    description: "Xato tipdagi ma'lumot kiritildi",
+  })
+  @ApiOkResponse({ description: 'Muvaffaqiyatli ochirildi' })
+  @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
+  @ApiUnauthorizedResponse({ description: 'Token yaroqsiz yoki topilmadi' })
+  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.booksService.remove(id);

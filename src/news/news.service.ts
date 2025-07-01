@@ -115,7 +115,7 @@ export class NewsService {
   async update(
     id: string,
     updateNewsDto: UpdateNewsDto,
-    image: Express.Multer.File,
+    image?: Express.Multer.File,
   ) {
     const newExists = await this.findOne(id);
     const bookExists = await this.findOne(id);
@@ -150,7 +150,12 @@ export class NewsService {
     return updatedNew;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} news`;
+  async remove(id: string) {
+    const bookExists = await this.findOne(id);
+    await this.update(bookExists.id, { active: false });
+
+    await this.redis.del(`new:id:${id}`);
+
+    return "Muvaffaqiyatli o'chirildi";
   }
 }
