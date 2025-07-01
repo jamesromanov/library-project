@@ -48,7 +48,7 @@ export class BooksController {
 
   @Post('add')
   @ApiOperation({
-    summary: "kitob qo'shish faqat adminlar uchun",
+    summary: "kitob qo'shish (adminlar uchun)",
     description:
       "kitob qo'shish rasmi bilan faqat adminlar uchun adminlar uchun",
   })
@@ -68,7 +68,7 @@ export class BooksController {
     return this.booksService.create(createBookDto, image);
   }
   @ApiOperation({
-    summary: 'kitoblarni olish',
+    summary: 'kitoblarni olish (adminlar uchun)',
     description: 'kitoblarni olish pagination orqali barcha uchun',
   })
   @ApiOkResponse({ description: 'Muvaffiqaytli olindi' })
@@ -110,7 +110,7 @@ export class BooksController {
     return this.booksService.findAll(query);
   }
   @ApiOperation({
-    summary: 'kitobni id orqali olish',
+    summary: 'kitobni id orqali olish (adminlar uchun) ',
     description: 'kitoblarni id orqali olish adminlar uchun',
   })
   @ApiOkResponse({ description: 'Muvaffiqaytli olindi' })
@@ -125,7 +125,7 @@ export class BooksController {
 
   @Patch(':id')
   @ApiOperation({
-    summary: 'kitobni yangilash',
+    summary: 'kitobni yangilash (adminlar uchun)',
     description: 'kitoblarni id orqali yangilash adminlar uchun',
   })
   @ApiOkResponse({ description: 'Muvaffatiqyatli yangilandi' })
@@ -153,7 +153,7 @@ export class BooksController {
   }
 
   @ApiOperation({
-    summary: 'kitoblani ochirish',
+    summary: 'kitoblani ochirish (adminlar uchun)',
     description: 'kitoblarni id orqali ochirish',
   })
   @ApiUnprocessableEntityResponse({
