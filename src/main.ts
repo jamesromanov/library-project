@@ -23,7 +23,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder()
     .setTitle("Tuproqqal'a TAKM api V1")
-    .setDescription("Tuproqqal'a TAKM Axborot kutubxona markazi api.")
+    .setDescription("Tuproqqal'a TAKM Axborot kutubxona markazi api.!")
     .addBearerAuth()
     .build();
 
