@@ -1,6 +1,22 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import Redis from 'ioredis';
-import { CreateBookDto } from 'src/books/dto/create-book.dto';
+import { Languages } from 'src/books/languages';
+
+export interface Book {
+  title: string;
+  author: string;
+  image: string;
+  publishedYear: number;
+  price: number;
+  description: string | null;
+  format: string;
+  pages: number;
+  language: Languages;
+  active: boolean;
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 @Injectable()
 export class RedisService implements OnModuleInit {
@@ -37,7 +53,7 @@ export class RedisService implements OnModuleInit {
     return await this.redisCli.del(key);
   }
   // FOR auto complete search
-  async addForAutoComplete(book: CreateBookDto, score: number = 0) {
+  async addForAutoComplete(book: Book, score: number = 0) {
     if (!book || !book.title || typeof book.title !== 'string') {
       console.warn('Attemted to add value with invalid format or invalid name');
       return;
@@ -106,7 +122,7 @@ export class RedisService implements OnModuleInit {
       ...uniqueLowerCasedNames,
     );
 
-    const results: CreateBookDto[] = [];
+    const results: Book[] = [];
     for (const jsonString of booksJson) {
       if (jsonString) {
         try {

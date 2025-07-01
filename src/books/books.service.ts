@@ -2,20 +2,13 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
-  Search,
 } from '@nestjs/common';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { QueryDto } from './dto/query.dto';
-import { RedisService } from 'src/redis/redis.service';
-import { Book } from 'generated/prisma';
-import { combineLatest, NotFoundError, of, take } from 'rxjs';
-import { listenerCount, off } from 'process';
-import { compareSync } from 'bcrypt';
-import { Languages } from './languages';
-import { Data } from './books.controller';
+import { Book, RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class BooksService {
@@ -30,10 +23,10 @@ export class BooksService {
     createBookDto.price = Number(createBookDto.price);
     createBookDto.publishedYear = Number(createBookDto.publishedYear);
     const active = createBookDto.active == true ? true : false;
-    await this.cloudinaryService
+    const book = await this.cloudinaryService
       .uploadImage(image)
       .then(async (data) => {
-        await this.prisma.book.create({
+        return await this.prisma.book.create({
           data: {
             ...createBookDto,
             image: data.secure_url,
@@ -45,6 +38,8 @@ export class BooksService {
         console.log(err);
         throw new BadRequestException('Rasm yoki kitob yaratishda   xatolik');
       });
+
+    await this.addBookSAutocomplete(book as any);
 
     return "Muvaffaqiyatli qo'shildi";
   }
@@ -155,9 +150,6 @@ export class BooksService {
             })
         : undefined;
 
-    console.log(imgUrl);
-    console.log(updateBookDto, image);
-
     const updatedBook = await this.prisma.book.update({
       where: { id: bookExists.id },
       data: {
@@ -165,6 +157,7 @@ export class BooksService {
         image: imgUrl,
       },
     });
+    await this.addBookSAutocomplete(updateBookDto as any);
     await this.redis.del(`book:id:${id}`);
     return updatedBook;
   }
@@ -240,13 +233,12 @@ export class BooksService {
       data: books,
     };
   }
-  async get(query: { search: string }) {
+  async getBooksByTitle(query: { search: string }) {
     const data = await this.redis.getFroAutocomplete(query.search);
-    console.log(data);
     return data;
   }
 
-  async add(data: CreateBookDto) {
+  async addBookSAutocomplete(data: Book) {
     return await this.redis.addForAutoComplete(data);
   }
 }

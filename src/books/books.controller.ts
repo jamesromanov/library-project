@@ -31,7 +31,7 @@ import {
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { QueryDto } from './dto/query.dto';
-import { Languages } from 'generated/prisma';
+import { Book, Languages } from 'generated/prisma';
 import { BooleanValidationPipe } from './dto/active.validation.pipe';
 import { reduce } from 'rxjs';
 import { IsString } from 'class-validator';
@@ -157,14 +157,17 @@ export class BooksController {
     return this.booksService.remove(id);
   }
 
-  @Get('get/sothig')
+  @ApiOperation({
+    summary: 'kitoblarni nomi orqali olish',
+    description: 'kitoblerni nomi orqali qidirish',
+  })
+  @ApiOkResponse({ description: 'Muvaffiqitayli olindi' })
+  @ApiNotFoundResponse({ description: 'Hech qanday kitob qopilmadi' })
+  @ApiUnauthorizedResponse({ description: 'Token yaroqsiz yoki topilmadi' })
+  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
+  @Get('get/book')
   @ApiQuery({ name: 'search', type: 'string' })
-  get(@Query() query: { search: string }) {
-    return this.booksService.get(query);
-  }
-
-  @Post('addd/s/s')
-  add(@Body() data: CreateBookDto) {
-    return this.booksService.add(data);
+  getBookByTitle(@Query() query: { search: string }) {
+    return this.booksService.getBooksByTitle(query);
   }
 }
