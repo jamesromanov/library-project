@@ -29,7 +29,6 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { BooleanValidationPipe } from 'src/books/dto/active.validation.pipe';
 import { Languages } from 'src/books/languages';
-import { query } from 'winston';
 import { QueryDto } from './query.dto';
 
 @Controller('news')
@@ -37,7 +36,7 @@ export class NewsController {
   constructor(private readonly newsService: NewsService) {}
 
   @ApiOperation({
-    summary: 'yangilik qoshish',
+    summary: 'yangilik qoshish (adminlar uchun)',
     description: 'yangilik qoshish faqat adminlar uchun',
   })
   @ApiCreatedResponse({ description: "Muvaffaqiyatli qo'shildi" })
@@ -62,7 +61,7 @@ export class NewsController {
   }
 
   @ApiOperation({
-    summary: 'barcha yangiliklarni olish',
+    summary: 'barcha yangiliklarni olish (adminlar uchun)',
     description: 'yangiliklarni olish pagination orqali adminlar uchun',
   })
   @ApiOkResponse({ description: 'Muvaffiqaytli olindi' })
@@ -83,7 +82,7 @@ export class NewsController {
   }
 
   @ApiOperation({
-    summary: 'yangilikni id orqali olish',
+    summary: 'yangilikni id orqali olish (adminlar uchun)',
     description: 'yangiliklarni id orqali olish adminlar uchun',
   })
   @ApiOkResponse({ description: 'Muvaffiqaytli olindi' })
@@ -97,7 +96,7 @@ export class NewsController {
   }
 
   @ApiOperation({
-    summary: 'yangiliklarni yangilash',
+    summary: 'yangiliklarni yangilash (adminlar uchun)',
     description: 'yangiliklarni id orqali yangilash adminlar uchun',
   })
   @ApiOkResponse({ description: 'Muvaffatiqyatli yangilandi' })
@@ -128,7 +127,7 @@ export class NewsController {
   }
 
   @ApiOperation({
-    summary: 'yangiliklarni ochirish',
+    summary: 'yangiliklarni ochirish (adminlar uchun)',
     description: 'yangilikarni id orqali ochirish adminlar uchun',
   })
   @ApiUnprocessableEntityResponse({
@@ -145,7 +144,7 @@ export class NewsController {
 
   @Get('get/all')
   @ApiOperation({
-    summary: 'yangiliklarni olish',
+    summary: 'yangiliklarni olish (adminlar uchun)',
     description:
       'barcha kitoblarni olish pagination orqali adminlar uchun adminlar uchun',
   })

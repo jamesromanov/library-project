@@ -22,7 +22,6 @@ import {
   ApiUnauthorizedResponse,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { Languages } from 'src/books/languages';
 import { QueryDto } from './dto/query,dto';
 
 @Controller('applications')
@@ -46,7 +45,7 @@ export class ApplicationsController {
   }
 
   @ApiOperation({
-    summary: 'barcha zayavkani olish',
+    summary: 'barcha zayavkani olish (adminlar uchun)',
     description:
       'barcha kitoblarni olish pagination orqali adminlar uchun adminlar uchun',
   })
@@ -62,7 +61,7 @@ export class ApplicationsController {
   }
 
   @ApiOperation({
-    summary: 'zayavkani id orqali olish',
+    summary: 'zayavkani id orqali olish (adminlar uchun)',
     description: 'zayavka id orqali olish adminlar uchun',
   })
   @ApiOkResponse({ description: 'Muvaffiqaytli olindi' })
@@ -76,7 +75,7 @@ export class ApplicationsController {
   }
 
   @ApiOperation({
-    summary: 'applucation yangilash',
+    summary: 'applucation yangilash (adminlar uchun)',
     description: 'application id orqali yangilash adminlar uchun',
   })
   @ApiOkResponse({ description: 'Muvaffatiqyatli yangilandi' })
@@ -93,7 +92,7 @@ export class ApplicationsController {
   }
 
   @ApiOperation({
-    summary: 'zayavkalarni ochirish',
+    summary: 'zayavkalarni ochirish (adminlar uchun)',
     description: 'zayavkalarni id orqali ochirish',
   })
   @ApiUnprocessableEntityResponse({

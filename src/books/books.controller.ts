@@ -68,7 +68,7 @@ export class BooksController {
     return this.booksService.create(createBookDto, image);
   }
   @ApiOperation({
-    summary: 'kitoblarni olish (adminlar uchun)',
+    summary: 'kitoblarni olish',
     description: 'kitoblarni olish pagination orqali barcha uchun',
   })
   @ApiOkResponse({ description: 'Muvaffiqaytli olindi' })
@@ -90,7 +90,7 @@ export class BooksController {
 
   @Get('get')
   @ApiOperation({
-    summary: 'barcha kitoblarni olish',
+    summary: 'barcha kitoblarni olish (adminalar uchun)',
     description:
       'barcha kitoblarni olish pagination orqali adminlar uchun adminlar uchun',
   })
