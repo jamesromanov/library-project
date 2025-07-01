@@ -121,6 +121,9 @@ export class BooksController {
   findAll(@Query() query: QueryDto) {
     return this.booksService.findAll(query);
   }
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(AdminRole.ADMIN)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'kitobni id orqali olish (adminlar uchun) ',
     description: 'kitoblarni id orqali olish adminlar uchun',
