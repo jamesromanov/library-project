@@ -186,9 +186,6 @@ export class BooksController {
     return this.booksService.remove(id);
   }
 
-  @UseGuards(JwtGuard, RolesGuard)
-  @Roles(AdminRole.ADMIN)
-  @ApiBearerAuth()
   @ApiOperation({
     summary: 'kitoblarni nomi orqali olish',
     description: 'kitoblerni nomi orqali qidirish',
