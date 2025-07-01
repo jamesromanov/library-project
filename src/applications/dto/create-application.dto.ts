@@ -19,7 +19,7 @@ export class CreateApplicationDto {
   @ApiProperty({
     type: 'string',
     default: '998999999999',
-    description: 'Zayavka nomeri',
+    description: 'Zayavka nomeri ',
   })
   @IsString()
   @IsNotEmpty()
