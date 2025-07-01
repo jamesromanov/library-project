@@ -98,20 +98,56 @@ export class NewsService {
     };
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, active?: boolean) {
     const newCache = await this.redis.get(`new:id:${id}`);
     console.log(newCache);
     if (newCache) return JSON.parse(newCache);
 
-    const newExists = await this.prisma.new.findUnique({ where: { id } });
+    const newExists = await this.prisma.new.findUnique({
+      where: { id, active: active || true },
+    });
     if (!newExists) throw new NotFoundException('Bu iddagi yangilik topilmadi');
 
     await this.redis.set(`new:id:${id}`, newExists, 60);
     return newExists;
   }
 
-  update(id: number, updateNewsDto: UpdateNewsDto) {
-    return `This action updates a #${id} news`;
+  async update(
+    id: string,
+    updateNewsDto: UpdateNewsDto,
+    image: Express.Multer.File,
+  ) {
+    const newExists = await this.findOne(id);
+    const bookExists = await this.findOne(id);
+    updateNewsDto.context = updateNewsDto.context || undefined;
+    updateNewsDto.language = updateNewsDto.language || undefined;
+    updateNewsDto.publication_date =
+      updateNewsDto.publication_date || undefined;
+    updateNewsDto.source = updateNewsDto.source || undefined;
+    updateNewsDto.title = updateNewsDto.title || undefined;
+
+    const imgUrl =
+      image !== undefined
+        ? await this.cloudinary
+            .uploadImage(image)
+            .then(async (data) => {
+              return data.secure_url;
+            })
+            .catch((err) => {
+              console.log(err);
+              throw new BadRequestException('Rasm yuklashda xatolik');
+            })
+        : undefined;
+
+    const updatedNew = await this.prisma.new.update({
+      where: { id: newExists.id },
+      data: {
+        ...updateNewsDto,
+        image: imgUrl,
+      },
+    });
+    await this.redis.del(`new:id:${id}`);
+    return updatedNew;
   }
 
   remove(id: number) {

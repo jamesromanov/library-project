@@ -8,7 +8,7 @@ import {
 @Injectable()
 export class BooleanValidationPipe implements PipeTransform {
   transform(value: string | undefined, metadata: ArgumentMetadata) {
-    if (value === undefined) return undefined;
+    if (value === undefined || value == '') return undefined;
     if (value === 'true') return true;
     if (value === 'false') return false;
 

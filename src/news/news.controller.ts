@@ -15,6 +15,7 @@ import { CreateNewsDto } from './dto/create-news.dto';
 import { UpdateNewsDto } from './dto/update-news.dto';
 import {
   ApiBadRequestResponse,
+  ApiBody,
   ApiConsumes,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
@@ -95,9 +96,35 @@ export class NewsController {
     return this.newsService.findOne(id);
   }
 
+  @ApiOperation({
+    summary: 'yangiliklarni yangilash',
+    description: 'yangiliklarni id orqali yangilash adminlar uchun',
+  })
+  @ApiOkResponse({ description: 'Muvaffatiqyatli yangilandi' })
+  @ApiBadRequestResponse({ description: 'Id xato kiritildi' })
+  @ApiNotFoundResponse({ description: "Hech qanday ma'lumot topilmadi" })
+  @ApiUnauthorizedResponse({ description: 'Token yaroqsiz yoki topilmadi' })
+  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: UpdateNewsDto })
+  @UseInterceptors(FileInterceptor('image'))
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateNewsDto: UpdateNewsDto) {
-    return this.newsService.update(+id, updateNewsDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateNewsDto: UpdateNewsDto,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    updateNewsDto.active =
+      updateNewsDto.active !== undefined
+        ? new BooleanValidationPipe().transform(
+            updateNewsDto.active.toString(),
+            {
+              type: 'body',
+              data: 'active',
+            },
+          )
+        : undefined;
+    return this.newsService.update(id, updateNewsDto, image);
   }
 
   @Delete(':id')
