@@ -15,6 +15,7 @@ import { RequestLoggerModule } from './request-logger/request-logger.module';
 import { BooksModule } from './books/books.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { NewsModule } from './news/news.module';
+import { ApplicationsModule } from './applications/applications.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { NewsModule } from './news/news.module';
     BooksModule,
     CloudinaryModule,
     NewsModule,
+    ApplicationsModule,
   ],
   providers: [
     {
