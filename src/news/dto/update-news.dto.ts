@@ -63,7 +63,7 @@ export class UpdateNewsDto extends PartialType(CreateNewsDto) {
   })
   @IsString()
   @IsOptional()
-  language: string;
+  language: Languages;
 
   @ApiProperty({ type: 'boolean', default: true, description: 'Habar status' })
   @IsBoolean()

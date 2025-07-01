@@ -1,4 +1,5 @@
 import { ApiOperation, ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { Languages } from 'src/books/languages';
 
@@ -52,11 +53,10 @@ export class CreateNewsDto {
     default: Languages.UZ,
     description: 'Habar tili',
   })
-  @IsString()
-  @IsNotEmpty()
-  language: string;
+  language: Languages;
 
   @ApiProperty({ type: 'boolean', default: true, description: 'Habar status' })
+  @Type(() => Boolean)
   @IsBoolean()
-  active: boolean;
+  active: boolean = true;
 }
