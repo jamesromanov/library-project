@@ -98,8 +98,15 @@ export class ApplicationsService {
     return applicationExists;
   }
 
-  update(id: number, updateApplicationDto: UpdateApplicationDto) {
-    return `This action updates a #${id} application`;
+  async update(id: string, updateApplicationDto: UpdateApplicationDto) {
+    const applicationExists = await this.findOne(id);
+
+    const updatedApplication = await this.prisma.application.update({
+      where: { id: applicationExists.id },
+      data: updateApplicationDto,
+    });
+    await this.redis.del(`application:id:${id}`);
+    return updatedApplication;
   }
 
   remove(id: number) {

@@ -75,12 +75,21 @@ export class ApplicationsController {
     return this.applicationsService.findOne(id);
   }
 
+  @ApiOperation({
+    summary: 'applucation yangilash',
+    description: 'application id orqali yangilash adminlar uchun',
+  })
+  @ApiOkResponse({ description: 'Muvaffatiqyatli yangilandi' })
+  @ApiBadRequestResponse({ description: 'Id xato kiritildi' })
+  @ApiNotFoundResponse({ description: "Hech qanday ma'lumot topilmadi" })
+  @ApiUnauthorizedResponse({ description: 'Token yaroqsiz yoki topilmadi' })
+  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @Patch(':id')
   update(
     @Param('id') id: string,
     @Body() updateApplicationDto: UpdateApplicationDto,
   ) {
-    return this.applicationsService.update(+id, updateApplicationDto);
+    return this.applicationsService.update(id, updateApplicationDto);
   }
 
   @Delete(':id')
