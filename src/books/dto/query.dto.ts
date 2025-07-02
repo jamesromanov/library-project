@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
 import { Languages } from '../languages';
+import { BookCategories } from '../catigories';
 
 export class QueryDto {
   @Type(() => Number)
@@ -12,4 +13,7 @@ export class QueryDto {
   @IsEnum(Languages)
   @IsOptional()
   language?: Languages;
+  @IsString()
+  @IsEnum(BookCategories)
+  category?: BookCategories
 }
