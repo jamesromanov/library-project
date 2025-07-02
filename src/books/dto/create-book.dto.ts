@@ -11,7 +11,7 @@ import { Languages } from '../languages';
 import { Transform, Type } from 'class-transformer';
 import { parse } from 'path';
 import { escape } from 'querystring';
-import { BookCatigories } from '../catigories';
+import { BookCategories } from '../catigories';
 
 export class CreateBookDto {
   @ApiProperty({
@@ -97,11 +97,11 @@ export class CreateBookDto {
 
   @ApiProperty({
     type: 'string',
-    enum: BookCatigories,
+    enum: BookCategories,
     description: 'Kitob katigoriyasi',
   })
-  @IsEnum(BookCatigories)
-  catigory: BookCatigories;
+  @IsEnum(BookCategories)
+  catigory: BookCategories;
   @ApiProperty({ type: 'boolean', default: true, description: 'Book statusi' })
   @Type(() => Boolean)
   @IsBoolean()

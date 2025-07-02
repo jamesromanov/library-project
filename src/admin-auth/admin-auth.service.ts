@@ -118,4 +118,10 @@ export class AdminAuthService {
     if (!adminExists) throw new NotFoundException('Admin topilmadi.');
     return adminExists;
   }
+
+  async findOne(id: string) {
+    const adminExists = await this.prisma.admin.findUnique({ where: { id } });
+    if (!adminExists) throw new UnauthorizedException('Admin topilmadi.');
+    return adminExists;
+  }
 }
