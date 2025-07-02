@@ -17,7 +17,8 @@ async function bootstrap() {
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
   app.enableCors({
     credentials: true,
-    origin: process.env.FRONTEND_URL,
+    origin: '*',
+    // process.env.FRONTEND_URL
   });
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe());
