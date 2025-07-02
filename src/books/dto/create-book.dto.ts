@@ -100,8 +100,9 @@ export class CreateBookDto {
     enum: BookCategories,
     description: 'Kitob katigoriyasi',
   })
+  @IsString()
   @IsEnum(BookCategories)
-  catigory: BookCategories;
+  category: BookCategories;
   @ApiProperty({ type: 'boolean', default: true, description: 'Book statusi' })
   @Type(() => Boolean)
   @IsBoolean()

@@ -29,7 +29,6 @@ export class BooksService {
         return await this.prisma.book.create({
           data: {
             ...createBookDto,
-            category: createBookDto.catigory,
             image: data.secure_url,
             active,
           },
