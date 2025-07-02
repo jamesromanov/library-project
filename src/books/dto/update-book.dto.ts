@@ -107,10 +107,11 @@ export class UpdateBookDto extends PartialType(CreateBookDto) {
     type: 'string',
     enum: BookCategories,
     description: 'Kitob katigoriyasi',
+    required: false,
   })
   @IsString()
   @IsOptional()
-  @IsEnum(BookCategories)
+  // @IsEnum(BookCategories)
   category?: BookCategories;
   @ApiProperty({
     type: Boolean,

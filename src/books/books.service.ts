@@ -142,6 +142,7 @@ export class BooksService {
     updateBookDto.publishedYear =
       Number(updateBookDto.publishedYear) || undefined;
     updateBookDto.title = updateBookDto.title || undefined;
+    updateBookDto.category = updateBookDto.category || undefined;
 
     const imgUrl =
       image !== undefined
@@ -160,10 +161,13 @@ export class BooksService {
       where: { id: bookExists.id },
       data: {
         ...updateBookDto,
+
         image: imgUrl,
       },
     });
-    await this.addBookSAutocomplete(updateBookDto as any);
+    console.log(updatedBook);
+    if (updateBookDto.active === true)
+      await this.addBookSAutocomplete(updatedBook as any);
     await this.redis.del(`book:id:${id}`);
     return updatedBook;
   }
