@@ -1,9 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsInt, IsNotEmpty, IsString, Max } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsString,
+  Max,
+} from 'class-validator';
 import { Languages } from '../languages';
 import { Transform, Type } from 'class-transformer';
 import { parse } from 'path';
 import { escape } from 'querystring';
+import { BookCatigories } from '../catigories';
 
 export class CreateBookDto {
   @ApiProperty({
@@ -33,7 +41,7 @@ export class CreateBookDto {
   image: Express.Multer.File;
 
   @ApiProperty({
-    type: "number",
+    type: 'number',
     default: 2025,
     description: 'Kitob chiqarilgan sanasi',
   })
@@ -45,7 +53,7 @@ export class CreateBookDto {
   @Max(2025)
   publishedYear: number;
 
-  @ApiProperty({ type: "number", default: 120, description: 'Kitob narxi' })
+  @ApiProperty({ type: 'number', default: 120, description: 'Kitob narxi' })
   @Transform(({ value }) => {
     return parseInt(value);
   })
@@ -68,7 +76,7 @@ export class CreateBookDto {
   format: string;
 
   @ApiProperty({
-    type: "number",
+    type: 'number',
     default: 120,
     description: 'Kitob betlari soni',
   })
@@ -87,6 +95,13 @@ export class CreateBookDto {
   })
   language: Languages;
 
+  @ApiProperty({
+    type: 'string',
+    enum: BookCatigories,
+    description: 'Kitob katigoriyasi',
+  })
+  @IsEnum(BookCatigories)
+  catigory: BookCatigories;
   @ApiProperty({ type: 'boolean', default: true, description: 'Book statusi' })
   @Type(() => Boolean)
   @IsBoolean()

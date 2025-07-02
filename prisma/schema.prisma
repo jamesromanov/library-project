@@ -35,7 +35,7 @@ model Book {
   format String @default("pdf")
   pages Int
   language Languages
-  category BookCatigory
+  category BookCatigories
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   active Boolean @default(true)
@@ -85,7 +85,7 @@ enum Languages {
 }
 
 //Book catigory 
-enum BookCatigory {
+enum BookCatigories {
   Badiiy_Adabiyotlar
   Rus_Adabiyotlar
   Ozbek_Adabiyotlar
