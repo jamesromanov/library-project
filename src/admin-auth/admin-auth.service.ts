@@ -76,7 +76,7 @@ export class AdminAuthService {
 
     res.cookie('jwt', refreshToken, {
       maxAge: eval(process.env.COOKIE_EXP as string),
-      secure: true,
+      secure: false,
       httpOnly: true,
     });
 
