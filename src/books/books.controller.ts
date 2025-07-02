@@ -129,6 +129,12 @@ export class BooksController {
     enum: Languages,
     required: false,
   })
+  @ApiQuery({
+    name: 'category',
+    type: 'enum',
+    enum: BookCategories,
+    required: false,
+  })
   findAll(@Query() query: QueryDto) {
     return this.booksService.findAll(query);
   }

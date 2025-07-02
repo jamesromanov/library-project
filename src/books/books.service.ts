@@ -47,6 +47,7 @@ export class BooksService {
     const page = query.page || 1;
     const limit = query.limit || 10;
     const language = query.language;
+    const category = query.category;
     if (limit < 1 || page < 1)
       throw new BadRequestException(
         `${limit < 1 ? 'Limit' : 'Page'} manfiy bo'lishi mumkin emas.`,
@@ -55,19 +56,21 @@ export class BooksService {
     const queryOptions = {
       skip: +offset,
       take: +limit,
-      where: { language },
+      where: { language, category },
     };
     let books: any[];
     let booksCount: number;
     const cacheBooks = await this.redis.get(
-      `books:page:${page}:${limit}:${language}`,
+      `books:page:${page}:${limit}:${language}:${category}`,
     );
     const cacheBooksCount = await this.redis.get(
-      `totalBooks:count:${language}`,
+      `totalBooks:count:${language}:${category}`,
     );
 
+    console.log(cacheBooks, cacheBooksCount);
+
     const [count, booksAll] = await this.prisma.$transaction([
-      this.prisma.book.count({ where: { language } }),
+      this.prisma.book.count({ where: { language, category } }),
       this.prisma.book.findMany({
         ...queryOptions,
         orderBy: [
@@ -87,11 +90,15 @@ export class BooksService {
 
     if (booksAll.length > 0 && count >= 1) {
       await this.redis.set(
-        `books:page:${page}:${limit}:${language}`,
+        `books:page:${page}:${limit}:${language}:${category}`,
         booksAll,
         60,
       );
-      await this.redis.set(`totalBooks:count:${language}`, count, 60);
+      await this.redis.set(
+        `totalBooks:count:${language}:${category}`,
+        count,
+        60,
+      );
     }
 
     const totalPages = Math.ceil(booksCount / limit);

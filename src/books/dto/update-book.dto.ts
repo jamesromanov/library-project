@@ -2,6 +2,7 @@ import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { CreateBookDto } from './create-book.dto';
 import {
   IsBoolean,
+  IsEnum,
   IsInt,
   IsNumber,
   IsOptional,
@@ -11,6 +12,7 @@ import {
 } from 'class-validator';
 import { Languages } from '../languages';
 import { Transform, Type } from 'class-transformer';
+import { BookCategories } from '../catigories';
 
 export class UpdateBookDto extends PartialType(CreateBookDto) {
   @ApiProperty({
@@ -101,6 +103,15 @@ export class UpdateBookDto extends PartialType(CreateBookDto) {
   })
   @IsOptional()
   language?: Languages;
+  @ApiProperty({
+    type: 'string',
+    enum: BookCategories,
+    description: 'Kitob katigoriyasi',
+  })
+  @IsString()
+  @IsOptional()
+  @IsEnum(BookCategories)
+  category?: BookCategories;
   @ApiProperty({
     type: Boolean,
     description: 'Book statusi',
