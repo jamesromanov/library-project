@@ -41,6 +41,7 @@ import { Roles } from 'src/guards/roles';
 import { JwtGuard } from 'src/guards/jwt.guard';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { AdminRole } from 'src/admin-auth/admin.role';
+import { BookCategories } from './catigories';
 
 export class Data {
   @ApiProperty({ example: 'sasasa' })
@@ -74,6 +75,10 @@ export class BooksController {
     @Body() createBookDto: CreateBookDto,
     @UploadedFile() image: Express.Multer.File,
   ) {
+    createBookDto.active = new BooleanValidationPipe().transform(
+      createBookDto.active.toString(),
+      { type: 'body', data: 'active' },
+    ) as boolean;
     return this.booksService.create(createBookDto, image);
   }
   @ApiOperation({
@@ -90,6 +95,12 @@ export class BooksController {
     name: 'language',
     type: 'enum',
     enum: Languages,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'category',
+    type: 'enum',
+    enum: BookCategories,
     required: false,
   })
   @Get('getBooks/all')

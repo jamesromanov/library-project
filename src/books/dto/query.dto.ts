@@ -14,6 +14,7 @@ export class QueryDto {
   @IsOptional()
   language?: Languages;
   @IsString()
+  @IsOptional()
   @IsEnum(BookCategories)
-  category?: BookCategories
+  category?: BookCategories;
 }

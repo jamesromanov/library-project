@@ -22,7 +22,6 @@ export class BooksService {
     createBookDto.pages = Number(createBookDto.pages);
     createBookDto.price = Number(createBookDto.price);
     createBookDto.publishedYear = Number(createBookDto.publishedYear);
-    const active = createBookDto.active == true ? true : false;
     const book = await this.cloudinaryService
       .uploadImage(image)
       .then(async (data) => {
@@ -30,7 +29,6 @@ export class BooksService {
           data: {
             ...createBookDto,
             image: data.secure_url,
-            active,
           },
         });
       })
@@ -39,7 +37,8 @@ export class BooksService {
         throw new BadRequestException('Rasm yoki kitob yaratishda   xatolik');
       });
 
-    await this.addBookSAutocomplete(book as any);
+    if (createBookDto.active === true)
+      await this.addBookSAutocomplete(book as any);
 
     return "Muvaffaqiyatli qo'shildi";
   }
@@ -176,6 +175,7 @@ export class BooksService {
     const page = query.page || 1;
     const limit = query.limit || 10;
     const language = query.language;
+    const category = query.category;
     if (limit < 1 || page < 1)
       throw new BadRequestException(
         `${limit < 1 ? 'Limit' : 'Page'} manfiy bo'lishi mumkin emas.`,
@@ -184,19 +184,19 @@ export class BooksService {
     const queryOptions = {
       skip: +offset,
       take: +limit,
-      where: { language, active: true },
+      where: { language, category, active: true },
     };
     let books: any[];
     let booksCount: number;
     const cacheBooks = await this.redis.get(
-      `books:page:${page}:${limit}:${language}:all`,
+      `books:page:${page}:${limit}:${language}:${category}:all`,
     );
     const cacheBooksCount = await this.redis.get(
-      `totalBooks:count:${language}:all`,
+      `totalBooks:count:${language}:${category}:all`,
     );
 
     const [count, booksAll] = await this.prisma.$transaction([
-      this.prisma.book.count({ where: { language, active: true } }),
+      this.prisma.book.count({ where: { language, category, active: true } }),
       this.prisma.book.findMany({
         ...queryOptions,
         orderBy: [
@@ -206,6 +206,7 @@ export class BooksService {
         ],
       }),
     ]);
+    console.log(booksAll);
     if (cacheBooks && cacheBooksCount) {
       books = JSON.parse(cacheBooks);
       booksCount = +cacheBooksCount;
@@ -216,11 +217,15 @@ export class BooksService {
 
     if (booksAll.length > 0 && count >= 1) {
       await this.redis.set(
-        `books:page:${page}:${limit}:${language}:all`,
+        `books:page:${page}:${limit}:${language}:${category}:all`,
         booksAll,
         60,
       );
-      await this.redis.set(`totalBooks:count:${language}:all`, count, 60);
+      await this.redis.set(
+        `totalBooks:count:${language}:${category}:all`,
+        count,
+        60,
+      );
     }
 
     const totalPages = Math.ceil(booksCount / limit);
