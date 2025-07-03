@@ -43,7 +43,7 @@ export class NewsService {
     const language = query.language;
     if (limit < 1 || page < 1)
       throw new BadRequestException(
-        `${limit < 1 ? 'Limit' : 'Page'} manfiy bo'lishi mumkin emas.`,
+        `${limit < 1 ? 'Limit' : 'Page'} manfiy yoki nolga bo'lishi mumkin emas.`,
       );
     const offset = (page - 1) * limit;
     const queryOptions = {
@@ -112,13 +112,13 @@ export class NewsService {
     return newExists;
   }
 
+  // UPDATE news only for admins
   async update(
     id: string,
     updateNewsDto: UpdateNewsDto,
     image?: Express.Multer.File,
   ) {
     const newExists = await this.findOne(id);
-    const bookExists = await this.findOne(id);
     updateNewsDto.context = updateNewsDto.context || undefined;
     updateNewsDto.language = updateNewsDto.language || undefined;
     updateNewsDto.publication_date =
@@ -158,7 +158,7 @@ export class NewsService {
 
     return "Muvaffaqiyatli o'chirildi";
   }
-
+  // GET ALL NEWS for users
   async getAllnews(query: QueryDto) {
     console.log(query);
     const page = query.page || 1;
@@ -166,7 +166,7 @@ export class NewsService {
     const language = query.language;
     if (limit < 1 || page < 1)
       throw new BadRequestException(
-        `${limit < 1 ? 'Limit' : 'Page'} manfiy bo'lishi mumkin emas.`,
+        `${limit < 1 ? 'Limit' : 'Page'} manfiy yoki nolga teng bo'lishi mumkin emas.`,
       );
     const offset = (page - 1) * limit;
     const queryOptions = {

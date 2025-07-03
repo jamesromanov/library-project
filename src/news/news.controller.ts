@@ -37,13 +37,13 @@ import { RolesGuard } from 'src/guards/roles.guard';
 import { AdminRole } from 'src/admin-auth/admin.role';
 import { Roles } from 'src/guards/roles';
 
-@UseGuards(JwtGuard, RolesGuard)
-@Roles(AdminRole.ADMIN)
-@ApiBearerAuth()
 @Controller('news')
 export class NewsController {
   constructor(private readonly newsService: NewsService) {}
 
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(AdminRole.ADMIN)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'yangilik qoshish (adminlar uchun)',
     description: 'yangilik qoshish faqat adminlar uchun',
@@ -69,6 +69,9 @@ export class NewsController {
     return this.newsService.create(createNewsDto, image);
   }
 
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(AdminRole.ADMIN)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'barcha yangiliklarni olish (adminlar uchun)',
     description: 'yangiliklarni olish pagination orqali adminlar uchun',
@@ -90,6 +93,9 @@ export class NewsController {
     return this.newsService.findAll(query);
   }
 
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(AdminRole.ADMIN)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'yangilikni id orqali olish (adminlar uchun)',
     description: 'yangiliklarni id orqali olish adminlar uchun',
@@ -104,6 +110,9 @@ export class NewsController {
     return this.newsService.findOne(id);
   }
 
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(AdminRole.ADMIN)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'yangiliklarni yangilash (adminlar uchun)',
     description: 'yangiliklarni id orqali yangilash adminlar uchun',
@@ -135,6 +144,9 @@ export class NewsController {
     return this.newsService.update(id, updateNewsDto, image);
   }
 
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(AdminRole.ADMIN)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'yangiliklarni ochirish (adminlar uchun)',
     description: 'yangilikarni id orqali ochirish adminlar uchun',
@@ -153,9 +165,8 @@ export class NewsController {
 
   @Get('get/all')
   @ApiOperation({
-    summary: 'yangiliklarni olish (adminlar uchun)',
-    description:
-      'barcha kitoblarni olish pagination orqali adminlar uchun adminlar uchun',
+    summary: 'yangiliklarni olish',
+    description: 'barcha kitoblarni olish pagination orqali barcha uchun',
   })
   @ApiOkResponse({ description: 'Muvaffaqiyatli olindi' })
   @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
