@@ -87,6 +87,9 @@ export class CreateBookDto {
   })
   pages: number;
 
+  @ApiProperty({ type: 'string', format: 'binary', required: true })
+  file: Express.Multer.File;
+
   @ApiProperty({
     type: 'string',
     enum: Languages,
