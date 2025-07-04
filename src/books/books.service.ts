@@ -9,32 +9,54 @@ import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { QueryDto } from './dto/query.dto';
 import { Book, RedisService } from 'src/redis/redis.service';
+import { CloudinaryService2 } from 'src/cloudinary/2cloudinary.service';
 
 @Injectable()
 export class BooksService {
   constructor(
     private cloudinaryService: CloudinaryService,
+    private cloudinaryService2: CloudinaryService2,
+
     private readonly prisma: PrismaService,
     private redis: RedisService,
   ) {}
   // BOOK create
-  async create(createBookDto: CreateBookDto, image: Express.Multer.File) {
+  async create(
+    createBookDto: CreateBookDto,
+    image: Express.Multer.File,
+    file: Express.Multer.File,
+  ) {
+    console.log(file);
     createBookDto.pages = Number(createBookDto.pages);
     createBookDto.price = Number(createBookDto.price);
     createBookDto.publishedYear = Number(createBookDto.publishedYear);
+    createBookDto.likes = Number(createBookDto.likes);
+
     const book = await this.cloudinaryService
-      .uploadImage(image)
+      .uploadImage(image[0])
       .then(async (data) => {
+        return data.secure_url;
+      })
+      .catch((err) => {
+        console.log(err);
+        throw new BadRequestException('Rasm yoki kitob yaratishda xatolik');
+      });
+    console.log(book);
+    await this.cloudinaryService2
+      .uploadFile(file[0])
+      .then(async (data) => {
+        // console.log(data.secure_url);
         return await this.prisma.book.create({
           data: {
             ...createBookDto,
-            image: data.secure_url,
+            file: data.secure_url,
+            image: book,
           },
         });
       })
       .catch((err) => {
         console.log(err);
-        throw new BadRequestException('Rasm yoki kitob yaratishda   xatolik');
+        throw new BadRequestException('File yoki kitob yaratishda xatolik');
       });
 
     if (createBookDto.active === true)
@@ -130,6 +152,7 @@ export class BooksService {
     id: string,
     updateBookDto: UpdateBookDto,
     image?: Express.Multer.File,
+    file?: Express.Multer.File,
   ) {
     const bookExists = await this.findOne(id);
     updateBookDto.pages = Number(updateBookDto.pages) || undefined;
@@ -156,12 +179,24 @@ export class BooksService {
               throw new BadRequestException('Rasm yuklashda xatolik');
             })
         : undefined;
+    const fileUrl =
+      file !== undefined
+        ? await this.cloudinaryService2
+            .uploadFile(file)
+            .then(async (data) => {
+              return data.secure_url;
+            })
+            .catch((err) => {
+              console.log(err);
+              throw new BadRequestException('File yuklashda xatolik');
+            })
+        : undefined;
 
     const updatedBook = await this.prisma.book.update({
       where: { id: bookExists.id },
       data: {
         ...updateBookDto,
-
+        file: fileUrl,
         image: imgUrl,
       },
     });

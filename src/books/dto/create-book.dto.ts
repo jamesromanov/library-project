@@ -4,6 +4,7 @@ import {
   IsEnum,
   IsInt,
   IsNotEmpty,
+  IsNumber,
   IsString,
   Max,
 } from 'class-validator';
@@ -87,8 +88,22 @@ export class CreateBookDto {
   })
   pages: number;
 
-  @ApiProperty({ type: 'string', format: 'binary', required: true })
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    required: true,
+    description: 'Kitob pdf',
+  })
   file: Express.Multer.File;
+
+  @ApiProperty({
+    type: 'number',
+    default: 0,
+    description: 'Kiton likelar soni',
+  })
+  @Type(() => Number)
+  @IsNumber()
+  likes: number;
 
   @ApiProperty({
     type: 'string',

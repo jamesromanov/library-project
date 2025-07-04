@@ -82,6 +82,12 @@ export class UpdateBookDto extends PartialType(CreateBookDto) {
   @IsOptional()
   @IsString()
   format?: string;
+  @ApiProperty({ type: 'string', format: 'binary', required: true })
+  file?: Express.Multer.File;
+
+  @ApiProperty({ type: 'number', default: 0 })
+  @IsNumber()
+  likes?: number;
 
   @ApiProperty({
     type: Number,

@@ -11,6 +11,7 @@ import {
   Query,
   ValidationPipe,
   UseGuards,
+  UploadedFiles,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
@@ -31,7 +32,10 @@ import {
   ApiUnauthorizedResponse,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  FileFieldsInterceptor,
+  FileInterceptor,
+} from '@nestjs/platform-express';
 import { QueryDto } from './dto/query.dto';
 import { Book, Languages } from 'generated/prisma';
 import { BooleanValidationPipe } from './dto/active.validation.pipe';
@@ -70,16 +74,23 @@ export class BooksController {
   @ApiUnauthorizedResponse({ description: 'Token yaroqsiz yoki topilmadi' })
   @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'image', maxCount: 1 },
+      { name: 'file', maxCount: 1 },
+    ]),
+  )
   create(
     @Body() createBookDto: CreateBookDto,
-    @UploadedFile() image: Express.Multer.File,
+    @UploadedFiles()
+    files: { image: Express.Multer.File; file: Express.Multer.File },
   ) {
     createBookDto.active = new BooleanValidationPipe().transform(
       createBookDto.active.toString(),
       { type: 'body', data: 'active' },
     ) as boolean;
-    return this.booksService.create(createBookDto, image);
+    console.log(files);
+    return this.booksService.create(createBookDto, files.image, files.file);
   }
   @ApiOperation({
     summary: 'kitoblarni olish',

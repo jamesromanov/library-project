@@ -33,6 +33,8 @@ model Book {
   price Int
   description String?
   format String @default("pdf")
+  file String 
+  likes Int @default(0)
   pages Int
   language Languages
   category BookCatigories

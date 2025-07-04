@@ -7,7 +7,7 @@ export const multerOptions = {
     fileSize: eval(process.env.MAX_IMAGE_SIZE as string),
   },
   fileFilter: (req: any, file: any, cb: any) => {
-    if (file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) cb(null, true);
+    if (file.mimetype.match(/\/(jpg|jpeg|png|gif|pdf)$/)) cb(null, true);
     else
       cb(
         new HttpException(
