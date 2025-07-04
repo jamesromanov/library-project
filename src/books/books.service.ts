@@ -181,7 +181,6 @@ export class BooksService {
               throw new BadRequestException('Rasm yuklashda xatolik');
             })
         : undefined;
-    console.log(file, '---------------------------------------');
     const fileUrl =
       file !== undefined
         ? await this.cloudinaryService2
@@ -203,7 +202,6 @@ export class BooksService {
         image: imgUrl,
       },
     });
-    console.log(updatedBook);
     if (updateBookDto.active === true)
       await this.addBookSAutocomplete(updatedBook as any);
     await this.redis.del(`book:id:${id}`);
@@ -294,5 +292,15 @@ export class BooksService {
 
   async addBookSAutocomplete(data: Book) {
     return await this.redis.addForAutoComplete(data);
+  }
+  async likeBook(id: string) {
+    if (!id) throw new BadRequestException('Id berish majburiy');
+    const bookExists = await this.findOne(id);
+    const likedBook = await this.update(bookExists.id, {
+      likes: bookExists.likes + 1,
+    });
+    await this.redis.del(`book:id:${id}`);
+    3;
+    return likedBook;
   }
 }
