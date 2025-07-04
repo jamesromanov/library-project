@@ -181,12 +181,18 @@ export class BooksController {
   @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: UpdateBookDto })
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'image', maxCount: 1 },
+      { name: 'file', maxCount: 1 },
+    ]),
+  )
   update(
     @Param('id') id: string,
     @Body()
     updateBookDto: UpdateBookDto,
-    @UploadedFile() image: Express.Multer.File,
+    @UploadedFiles()
+    files: { image: Express.Multer.File; file: Express.Multer.File },
   ) {
     updateBookDto.active = updateBookDto.active
       ? new BooleanValidationPipe().transform(updateBookDto.active.toString(), {
@@ -195,7 +201,7 @@ export class BooksController {
         })
       : undefined;
     console.log(updateBookDto.active, 'controller');
-    return this.booksService.update(id, updateBookDto, image);
+    return this.booksService.update(id, updateBookDto, files.image, files.file);
   }
 
   @UseGuards(JwtGuard, RolesGuard)

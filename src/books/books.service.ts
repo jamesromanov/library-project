@@ -162,6 +162,8 @@ export class BooksService {
     updateBookDto.language = updateBookDto.language || undefined;
     updateBookDto.pages = Number(updateBookDto.pages) || undefined;
     updateBookDto.price = Number(updateBookDto.price) || undefined;
+    updateBookDto.likes = Number(updateBookDto.likes) || undefined;
+
     updateBookDto.publishedYear =
       Number(updateBookDto.publishedYear) || undefined;
     updateBookDto.title = updateBookDto.title || undefined;
@@ -170,7 +172,7 @@ export class BooksService {
     const imgUrl =
       image !== undefined
         ? await this.cloudinaryService
-            .uploadImage(image)
+            .uploadImage(image[0])
             .then(async (data) => {
               return data.secure_url;
             })
@@ -179,10 +181,11 @@ export class BooksService {
               throw new BadRequestException('Rasm yuklashda xatolik');
             })
         : undefined;
+    console.log(file, '---------------------------------------');
     const fileUrl =
       file !== undefined
         ? await this.cloudinaryService2
-            .uploadFile(file)
+            .uploadFile(file[0])
             .then(async (data) => {
               return data.secure_url;
             })
