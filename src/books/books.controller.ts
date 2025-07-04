@@ -201,7 +201,12 @@ export class BooksController {
         })
       : undefined;
     console.log(updateBookDto.active, 'controller');
-    return this.booksService.update(id, updateBookDto, files.image, files.file);
+    return this.booksService.update(
+      id,
+      updateBookDto,
+      files.image,
+      files.image,
+    );
   }
 
   @UseGuards(JwtGuard, RolesGuard)

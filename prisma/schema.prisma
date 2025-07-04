@@ -61,7 +61,8 @@ model Application {
 model New {
   id String @id @default(ulid())
   title String 
-  image String
+  thumbnail String
+  images String[]
   context String
   publication_date String
   source String

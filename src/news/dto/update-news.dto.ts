@@ -18,10 +18,19 @@ export class UpdateNewsDto extends PartialType(CreateNewsDto) {
     type: 'string',
     format: 'binary',
     required: false,
+    description: 'Yangilik muqovasi',
+  })
+  thumbnail?: Express.Multer.File;
+  @ApiProperty({
+    isArray: true,
+    type: 'string',
+    format: 'binary',
+
+    required: false,
+
     description: 'Yangilik rasmi',
   })
-  @IsOptional()
-  image?: Express.Multer.File;
+  images?: Express.Multer.File[];
 
   @ApiProperty({
     type: 'string',

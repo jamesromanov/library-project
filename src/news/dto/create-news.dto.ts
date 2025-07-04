@@ -17,9 +17,19 @@ export class CreateNewsDto {
     type: 'string',
     format: 'binary',
     required: true,
+    description: 'Yangilik muqovasi',
+  })
+  thumbnail: Express.Multer.File;
+  @ApiProperty({
+    isArray: true,
+    type: 'string',
+    format: 'binary',
+
+    required: true,
+
     description: 'Yangilik rasmi',
   })
-  image: Express.Multer.File;
+  images: Express.Multer.File[];
 
   @ApiProperty({
     type: 'string',

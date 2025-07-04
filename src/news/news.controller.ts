@@ -10,6 +10,7 @@ import {
   UploadedFile,
   Query,
   UseGuards,
+  UploadedFiles,
 } from '@nestjs/common';
 import { NewsService } from './news.service';
 import { CreateNewsDto } from './dto/create-news.dto';
@@ -28,7 +29,10 @@ import {
   ApiUnauthorizedResponse,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  FileFieldsInterceptor,
+  FileInterceptor,
+} from '@nestjs/platform-express';
 import { BooleanValidationPipe } from 'src/books/dto/active.validation.pipe';
 import { Languages } from 'src/books/languages';
 import { QueryDto } from './query.dto';
@@ -56,17 +60,33 @@ export class NewsController {
   @ApiUnauthorizedResponse({ description: 'Token yaroqsiz yoki topilmadi' })
   @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      {
+        name: 'images',
+        maxCount: 5,
+      },
+      {
+        name: 'thumbnail',
+        maxCount: 1,
+      },
+    ]),
+  )
   @Post('add')
   create(
     @Body() createNewsDto: CreateNewsDto,
-    @UploadedFile() image: Express.Multer.File,
+    @UploadedFiles()
+    files: { images: Express.Multer.File[]; thumbnail: Express.Multer.File },
   ) {
     createNewsDto.active = new BooleanValidationPipe().transform(
       createNewsDto.active.toString(),
       { type: 'body', data: 'active' },
     ) as boolean;
-    return this.newsService.create(createNewsDto, image);
+    return this.newsService.create(
+      createNewsDto,
+      files.images,
+      files.thumbnail,
+    );
   }
 
   @UseGuards(JwtGuard, RolesGuard)
@@ -124,12 +144,25 @@ export class NewsController {
   @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: UpdateNewsDto })
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      {
+        name: 'images',
+        maxCount: 5,
+      },
+      {
+        name: 'thumbnail',
+        maxCount: 1,
+      },
+    ]),
+  )
   @Patch(':id')
   update(
     @Param('id') id: string,
     @Body() updateNewsDto: UpdateNewsDto,
-    @UploadedFile() image: Express.Multer.File,
+
+    @UploadedFiles()
+    files: { images: Express.Multer.File[]; thumbnail: Express.Multer.File },
   ) {
     updateNewsDto.active =
       updateNewsDto.active !== undefined
@@ -141,7 +174,12 @@ export class NewsController {
             },
           )
         : undefined;
-    return this.newsService.update(id, updateNewsDto, image);
+    return this.newsService.update(
+      id,
+      updateNewsDto,
+      files.images,
+      files.thumbnail,
+    );
   }
 
   @UseGuards(JwtGuard, RolesGuard)

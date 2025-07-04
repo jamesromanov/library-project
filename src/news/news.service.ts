@@ -10,6 +10,7 @@ import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { RedisService } from 'src/redis/redis.service';
 import { QueryDto } from './query.dto';
 import { NotFoundError } from 'rxjs';
+import MsearchApi from '@elastic/elasticsearch/lib/api/api/msearch';
 
 @Injectable()
 export class NewsService {
@@ -18,20 +19,49 @@ export class NewsService {
     private cloudinary: CloudinaryService,
     private redis: RedisService,
   ) {}
-  async create(createNewsDto: CreateNewsDto, image: Express.Multer.File) {
-    const active = createNewsDto.active == true ? true : false;
-    const imageUrl = await this.cloudinary
-      .uploadImage(image)
-      .then((data) => {
-        return data.secure_url;
-      })
-      .catch((err) => {
-        console.log(err);
-        throw new BadRequestException('Rasm yuklashda xatolik');
-      });
 
-    const New = await this.prisma.new.create({
-      data: { ...createNewsDto, active, image: imageUrl },
+  async create(
+    createNewsDto: CreateNewsDto,
+    images: Express.Multer.File[],
+    thumbnail: Express.Multer.File,
+  ) {
+    const active = createNewsDto.active == true ? true : false;
+
+    const imgUrls = await Promise.all([
+      await Promise.all(
+        images.map((e) => {
+          return new Promise<string>(async (res, rej) => {
+            this.cloudinary
+              .uploadImage(e)
+              .then((data) => {
+                res(data.secure_url);
+              })
+              .catch(() => {
+                rej('Rasm yuklashda xatolik');
+              });
+          });
+        }),
+      ),
+      new Promise<string>(async (res, rej) => {
+        this.cloudinary
+          .uploadImage(thumbnail[0])
+          .then(async (data) => {
+            res(data.secure_url);
+          })
+          .catch((err) => {
+            console.log(err);
+            throw new BadRequestException('Muqova yulashda xatolik');
+          });
+      }),
+    ]);
+
+    await this.prisma.new.create({
+      data: {
+        ...createNewsDto,
+        active,
+        images: imgUrls[0],
+        thumbnail: imgUrls[1],
+      },
     });
 
     return "Muvaffaqiyatli qo'shildi";
@@ -116,7 +146,8 @@ export class NewsService {
   async update(
     id: string,
     updateNewsDto: UpdateNewsDto,
-    image?: Express.Multer.File,
+    images?: Express.Multer.File[],
+    thumbnail?: Express.Multer.File,
   ) {
     const newExists = await this.findOne(id);
     updateNewsDto.context = updateNewsDto.context || undefined;
@@ -126,16 +157,32 @@ export class NewsService {
     updateNewsDto.source = updateNewsDto.source || undefined;
     updateNewsDto.title = updateNewsDto.title || undefined;
 
-    const imgUrl =
-      image !== undefined
+    const imgUrls = images?.length
+      ? await Promise.all(
+          images.map((img) => {
+            return new Promise<string>(async (res, rej) => {
+              this.cloudinary
+                .uploadImage(img)
+                .then((data) => {
+                  res(data.secure_url);
+                })
+                .catch(() => {
+                  rej('Rasm yuklashda xatolik');
+                });
+            });
+          }),
+        )
+      : undefined;
+    const thumbNail =
+      thumbnail !== undefined
         ? await this.cloudinary
-            .uploadImage(image)
+            .uploadImage(thumbnail[0])
             .then(async (data) => {
               return data.secure_url;
             })
             .catch((err) => {
               console.log(err);
-              throw new BadRequestException('Rasm yuklashda xatolik');
+              throw new BadRequestException('Muqova yulashda xatolik');
             })
         : undefined;
 
@@ -143,7 +190,8 @@ export class NewsService {
       where: { id: newExists.id },
       data: {
         ...updateNewsDto,
-        image: imgUrl,
+        images: imgUrls,
+        thumbnail: thumbNail,
       },
     });
     await this.redis.del(`new:id:${id}`);
