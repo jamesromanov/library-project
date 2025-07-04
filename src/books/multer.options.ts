@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { diskStorage, memoryStorage } from 'multer';
+import { memoryStorage } from 'multer';
 import * as path from 'path';
 
 export const multerOptions = {
