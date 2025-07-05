@@ -1,6 +1,7 @@
 import { PartialType } from '@nestjs/swagger';
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsBoolean,
   IsEmail,
   IsEnum,
   IsOptional,
@@ -59,4 +60,12 @@ export class UpdateUserDto {
   @IsOptional()
   @IsEnum(AdminRole, { message: "Role xato kiritildi ADMIN bo'lishi kerak." })
   role?: AdminRole;
+  @ApiProperty({
+    type: 'boolean',
+    default: true,
+    description: 'foydalanuvchi statusi',
+  })
+  @IsOptional()
+  @IsBoolean()
+  active?: boolean;
 }
