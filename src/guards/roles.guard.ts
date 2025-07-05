@@ -11,15 +11,6 @@ import { ROLES_KEY } from './roles';
 import { Request } from 'express';
 import { Languages } from 'src/books/languages';
 
-export interface User {
-  name: string | null;
-  id: string;
-  email: string;
-  password: string;
-  refreshToken: string | null;
-  role: AdminRole;
-  createdAt: Date;
-}
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
@@ -33,10 +24,8 @@ export class RolesGuard implements CanActivate {
       );
       if (!requiredRole) return true;
 
-      const { user } = context
-        .switchToHttp()
-        .getRequest<Request & { user: User }>();
-      if (!user) throw new UnauthorizedException("Ro'yhatdan o'rilmagan");
+      const { user } = context.switchToHttp().getRequest<Request>();
+      if (!user) throw new UnauthorizedException("Ro'yhatdan o'tilmagan");
       if (!requiredRole.includes(user?.role))
         throw new UnauthorizedException(
           "Sizda buni qilishingiz uchun huquqingiz yo'q",

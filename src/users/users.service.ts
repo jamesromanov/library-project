@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -27,7 +28,7 @@ export class UsersService {
     if (createUserDto.role === AdminRole.ADMIN)
       throw new BadRequestException('foydalanuvchi roli USER bolishi kerak');
     const userExists = await this.prisma.user.findUnique({
-      where: { email: createUserDto.email },
+      where: { email: createUserDto.email, active: true },
     });
     if (userExists)
       throw new BadRequestException('Bu foydalanuchi oldin royxatadan o`tgan');
@@ -41,7 +42,9 @@ export class UsersService {
     let user: User;
     const userCache = await this.redis.get(`user:${email}`);
 
-    const userExists = await this.prisma.user.findUnique({ where: { email } });
+    const userExists = await this.prisma.user.findUnique({
+      where: { email, active: true },
+    });
     if (!userExists || userExists.role !== AdminRole.USER)
       throw new NotFoundException('Parol yoki email xato');
 
@@ -86,7 +89,7 @@ export class UsersService {
     });
 
     const userExists = await this.prisma.user.findUnique({
-      where: { refreshToken: token },
+      where: { refreshToken: token, active: true },
     });
 
     if (userExists?.id !== verifyToken.id || !userExists)
@@ -96,7 +99,7 @@ export class UsersService {
       role: userExists.role,
     };
 
-    const acceesToken = await this.jwt.sign(payload, {
+    const acceesToken = await this.jwt.signAsync(payload, {
       secret: process.env.ACCESS_TOKEN_KEY,
       expiresIn: process.env.ACCESS_TOKEN_EXP,
     });
@@ -157,10 +160,12 @@ export class UsersService {
     };
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, active?: boolean) {
     const userCache = await this.redis.get(`user:id:${id}`);
     if (userCache) return JSON.parse(userCache);
-    const userExists = await this.prisma.user.findUnique({ where: { id } });
+    const userExists = await this.prisma.user.findUnique({
+      where: { id, active: active },
+    });
     if (!userExists)
       throw new NotFoundException('Bu iddagi foydalanuvchi topilmadi');
     await this.redis.set(`user:id:${id}`, userExists, 60);
@@ -168,7 +173,7 @@ export class UsersService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    const userExists = await this.findOne(id);
+    const userExists = await this.findOne(id, true);
     if (updateUserDto.password)
       updateUserDto.password = await bcyrpt.hash(updateUserDto.password, 12);
     const updatedUser = await this.prisma.user.update({
@@ -179,7 +184,20 @@ export class UsersService {
     return updatedUser;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    const userExists = await this.findOne(id, true);
+    await this.update(userExists.id, { active: false });
+    return "Muvaffaqiyatli o'chirildi";
+  }
+
+  async getMe(req: Request) {
+    const { user } = req;
+    if (!user) throw new UnauthorizedException('Royxatdan otilmagan');
+    const userExists = await this.prisma.user.findUnique({
+      where: { id: user.id },
+    });
+    if (!userExists) throw new UnauthorizedException('Foydalanuvchi topilmadi');
+
+    return userExists;
   }
 }

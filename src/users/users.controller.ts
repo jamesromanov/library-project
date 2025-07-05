@@ -117,6 +117,7 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
+  // USER update
   @ApiOperation({
     summary: "foydalanuvchi ma'lumorlarini yangilash",
     description: "foydalanuvchini ma'lumotlarini yangilash",
@@ -133,8 +134,37 @@ export class UsersController {
     return this.usersService.update(id, updateUserDto);
   }
 
+  // USER delete
+  @ApiOperation({
+    summary: "foydalanuvchini o'chirish",
+    description: "foydalanuvchini o'chirish",
+  })
+  @ApiUnauthorizedResponse({
+    description: "Tokenda yoki Hato ma'lumot kiritilgandagi xatolik",
+  })
+  @ApiCreatedResponse({ description: 'Muvaffaqiyatli olindi' })
+  @ApiConflictResponse({ description: 'Conflict xatolik' })
+  @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
+  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+    return this.usersService.remove(id);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @ApiOperation({
+    summary: "foydalanuvchi o'zini ko'rish",
+  })
+  @ApiUnauthorizedResponse({
+    description: "Tokenda yoki Hato ma'lumot kiritilgandagi xatolik",
+  })
+  @ApiCreatedResponse({ description: 'Muvaffaqiyatli olindi' })
+  @ApiConflictResponse({ description: 'Conflict xatolik' })
+  @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
+  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
+  @Get('get/me')
+  getMe(@Req() req: Request) {
+    return this.usersService.getMe(req);
   }
 }
