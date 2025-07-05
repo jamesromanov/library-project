@@ -23,6 +23,17 @@ model Admin {
   role Role
   createdAt DateTime @default(now())
 }
+// User 
+model User {
+  id String @id @default(uuid())
+  name  String?
+  email String @unique
+  password String
+  refreshToken String? @unique
+  role Role
+  createdAt DateTime @default(now())
+  likes Like[]
+}
 // BOOK model
 model Book {
   id String @id @default(uuid())
@@ -34,13 +45,13 @@ model Book {
   description String?
   format String @default("pdf")
   file String 
-  likes Int @default(0)
   pages Int
   language Languages
   category BookCatigories
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   active Boolean @default(true)
+  likes Like[]
 
   @@index([title, price, pages, language, createdAt])
 }
@@ -71,14 +82,23 @@ model New {
   updatedAt DateTime @updatedAt
   active Boolean @default(true)
 
-
   @@index([updatedAt, language, createdAt])
 }
 
+model Like {
+  id String @id @default(ulid())
+  user User @relation(fields: [userId], references: [id])
+  userId String
+  book Book @relation(fields: [bookId], references: [id])
+  bookId  String
+   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
 // USER role 
 enum Role {
   ADMIN
+  USER
 }
 // BOOK | NEWS languages 
 enum Languages {
