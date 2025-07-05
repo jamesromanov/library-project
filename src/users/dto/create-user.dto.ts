@@ -53,7 +53,7 @@ export class CreateUserDto {
     description: 'User role',
   })
   @IsNotEmpty()
-  @IsEnum(AdminRole, { message: "Role xato kiritildi ADMIN bo'lishi kerak." })
+  @IsEnum(AdminRole, { message: "Role xato kiritildi USER bo'lishi kerak." })
   role: AdminRole;
 
   @ApiProperty({

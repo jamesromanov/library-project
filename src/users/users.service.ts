@@ -30,7 +30,7 @@ export class UsersService {
       where: { email: createUserDto.email },
     });
     if (userExists)
-      throw new BadRequestException('Bu foydalanuchi oldin royxatadan otgan');
+      throw new BadRequestException('Bu foydalanuchi oldin royxatadan o`tgan');
 
     createUserDto.password = await bcyrpt.hash(createUserDto.password, 12);
     await this.prisma.user.create({ data: createUserDto });
