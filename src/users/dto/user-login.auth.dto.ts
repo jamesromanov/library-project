@@ -1,27 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
-  IsEnum,
   IsNotEmpty,
   IsString,
   IsStrongPassword,
   Matches,
 } from 'class-validator';
-import { AdminRole } from '../admin.role';
 
-export class CreateAdminAuthDto {
-  @ApiProperty({
-    type: 'string',
-    default: 'Asilbek',
-    description: 'Admin yoki ismi',
-  })
-  @IsString()
-  name: string;
-
+// USER login operatoins
+export class LoginUserAuthDto {
   @ApiProperty({
     type: 'string',
     default: 'exmaple@gmail.com',
-    description: 'Admin emaili',
+    description: 'User emaili',
   })
   @IsNotEmpty()
   @IsString()
@@ -34,7 +25,7 @@ export class CreateAdminAuthDto {
   @ApiProperty({
     type: 'string',
     default: 'kuchliParol1:!',
-    description: 'Admin paroli',
+    description: 'User paroli',
   })
   @IsNotEmpty()
   @IsString()
@@ -44,13 +35,4 @@ export class CreateAdminAuthDto {
       'Parol kamida 1 ta katta harf, bitta kichkina harf, bitta raqam va bitta belgidan iborat bolishi kerak.',
   })
   password: string;
-
-  @ApiProperty({
-    type: 'string',
-    default: AdminRole.ADMIN,
-    description: 'Admin role',
-  })
-  @IsNotEmpty()
-  @IsEnum(AdminRole, { message: "Role xato kiritildi ADMIN bo'lishi kerak." })
-  role: AdminRole;
 }

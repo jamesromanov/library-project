@@ -7,13 +7,13 @@ import {
   IsStrongPassword,
   Matches,
 } from 'class-validator';
-import { AdminRole } from '../admin.role';
+import { AdminRole } from 'src/admin-auth/admin.role';
 
-export class CreateAdminAuthDto {
+export class CreateUserDto {
   @ApiProperty({
     type: 'string',
-    default: 'Asilbek',
-    description: 'Admin yoki ismi',
+    default: 'Avazbek',
+    description: 'User ismi',
   })
   @IsString()
   name: string;
@@ -21,7 +21,7 @@ export class CreateAdminAuthDto {
   @ApiProperty({
     type: 'string',
     default: 'exmaple@gmail.com',
-    description: 'Admin emaili',
+    description: 'User emaili',
   })
   @IsNotEmpty()
   @IsString()
@@ -34,7 +34,7 @@ export class CreateAdminAuthDto {
   @ApiProperty({
     type: 'string',
     default: 'kuchliParol1:!',
-    description: 'Admin paroli',
+    description: 'User paroli',
   })
   @IsNotEmpty()
   @IsString()
@@ -47,8 +47,8 @@ export class CreateAdminAuthDto {
 
   @ApiProperty({
     type: 'string',
-    default: AdminRole.ADMIN,
-    description: 'Admin role',
+    default: AdminRole.USER,
+    description: 'User role',
   })
   @IsNotEmpty()
   @IsEnum(AdminRole, { message: "Role xato kiritildi ADMIN bo'lishi kerak." })
