@@ -96,14 +96,6 @@ export class CreateBookDto {
   })
   file: Express.Multer.File;
 
-  @ApiProperty({
-    type: 'number',
-    default: 0,
-    description: 'Kiton likelar soni',
-  })
-  @Type(() => Number)
-  @IsNumber()
-  likes: number;
 
   @ApiProperty({
     type: 'string',

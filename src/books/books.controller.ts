@@ -241,16 +241,4 @@ export class BooksController {
   getBookByTitle(@Query() query: { search: string }) {
     return this.booksService.getBooksByTitle(query);
   }
-
-  @ApiOperation({
-    summary: 'kitoblarga id orqali like bosish',
-    description: 'kitoblarga idsi orqali like boshish',
-  })
-  @ApiOkResponse({ description: 'Muvaffiqitayli bajrarildi' })
-  @ApiNotFoundResponse({ description: 'Hech qanday kitob qopilmadi' })
-  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
-  @Patch('like/:id')
-  likeBook(@Param('id') id: string) {
-    return this.booksService.likeBook(id);
-  }
 }

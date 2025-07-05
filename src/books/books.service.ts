@@ -26,11 +26,9 @@ export class BooksService {
     image: Express.Multer.File,
     file: Express.Multer.File,
   ) {
-    console.log(file);
     createBookDto.pages = Number(createBookDto.pages);
     createBookDto.price = Number(createBookDto.price);
     createBookDto.publishedYear = Number(createBookDto.publishedYear);
-    createBookDto.likes = Number(createBookDto.likes);
 
     const book = await this.cloudinaryService
       .uploadImage(image[0])
@@ -162,7 +160,6 @@ export class BooksService {
     updateBookDto.language = updateBookDto.language || undefined;
     updateBookDto.pages = Number(updateBookDto.pages) || undefined;
     updateBookDto.price = Number(updateBookDto.price) || undefined;
-    updateBookDto.likes = Number(updateBookDto.likes) || undefined;
 
     updateBookDto.publishedYear =
       Number(updateBookDto.publishedYear) || undefined;
@@ -292,15 +289,5 @@ export class BooksService {
 
   async addBookSAutocomplete(data: Book) {
     return await this.redis.addForAutoComplete(data);
-  }
-  async likeBook(id: string) {
-    if (!id) throw new BadRequestException('Id berish majburiy');
-    const bookExists = await this.findOne(id);
-    const likedBook = await this.update(bookExists.id, {
-      likes: bookExists.likes + 1,
-    });
-    await this.redis.del(`book:id:${id}`);
-    3;
-    return likedBook;
   }
 }
