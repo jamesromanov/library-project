@@ -91,8 +91,19 @@ export class UpdateBookDto extends PartialType(CreateBookDto) {
     required: false,
     description: 'Kitob tili',
   })
+  @ApiProperty({ type: 'string', default: 'pdf', description: 'Kitob formati' })
+  @IsOptional()
+  @IsString()
+  format?: string;
   @IsOptional()
   language?: Languages;
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    required: false,
+    description: 'Kitob pdf',
+  })
+  file?: Express.Multer.File;
   @ApiProperty({
     type: 'string',
     enum: BookCategories,
