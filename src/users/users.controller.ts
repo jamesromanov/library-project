@@ -117,9 +117,20 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
+  @ApiOperation({
+    summary: "foydalanuvchi ma'lumorlarini yangilash",
+    description: "foydalanuvchini ma'lumotlarini yangilash",
+  })
+  @ApiUnauthorizedResponse({
+    description: "Tokenda yoki Hato ma'lumot kiritilgandagi xatolik",
+  })
+  @ApiCreatedResponse({ description: 'Muvaffaqiyatli olindi' })
+  @ApiConflictResponse({ description: 'Conflict xatolik' })
+  @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
+  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+    return this.usersService.update(id, updateUserDto);
   }
 
   @Delete(':id')

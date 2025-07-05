@@ -159,19 +159,24 @@ export class UsersService {
 
   async findOne(id: string) {
     const userCache = await this.redis.get(`user:id:${id}`);
-    console.log(userCache);
     if (userCache) return JSON.parse(userCache);
     const userExists = await this.prisma.user.findUnique({ where: { id } });
     if (!userExists)
       throw new NotFoundException('Bu iddagi foydalanuvchi topilmadi');
     await this.redis.set(`user:id:${id}`, userExists, 60);
     return userExists;
-
-    return `This action returns a #${id} user`;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const userExists = await this.findOne(id);
+    if (updateUserDto.password)
+      updateUserDto.password = await bcyrpt.hash(updateUserDto.password, 12);
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userExists.id },
+      data: updateUserDto,
+    });
+    await this.redis.del(`user:id:${id}`);
+    return updatedUser;
   }
 
   remove(id: number) {
