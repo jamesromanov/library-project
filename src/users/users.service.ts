@@ -25,6 +25,13 @@ export class UsersService {
   async register(createUserDto: CreateUserDto) {
     if (createUserDto.role === AdminRole.ADMIN)
       throw new BadRequestException('foydalanuvchi roli USER bolishi kerak');
+    const userExists = await this.prism.user.findUnique({
+      where: { email: createUserDto.email },
+    });
+    if (userExists)
+      throw new BadRequestException('Bu foydalanuchi oldin royxatadan otgan');
+
+    createUserDto.password = await bcyrpt.hash(createUserDto.password, 12);
     await this.prism.user.create({ data: createUserDto });
     return "Muvaffaqiyatli qo'shildi";
   }
@@ -67,6 +74,33 @@ export class UsersService {
     });
 
     return "Muvaffaqiyatli ro'yxatdan o'tildi";
+  }
+
+  async refreshTokenUser(req: Request, res: Response) {
+    const token = req.cookies['public-token'];
+    if (!token) throw new NotFoundException('Token topilmadi');
+
+    const verifyToken = await this.jwt.verifyAsync(token, {
+      secret: process.env.REFRESH_USER_TOKEN_SECRET,
+    });
+
+    const userExists = await this.prism.user.findUnique({
+      where: { refreshToken: token },
+    });
+
+    if (userExists?.id !== verifyToken.id || !userExists)
+      throw new NotFoundException('Token yaroqsiz');
+    const payload = {
+      id: userExists.id,
+      role: userExists.role,
+    };
+
+    const acceesToken = await this.jwt.sign(payload, {
+      secret: process.env.ACCESS_USER_TOKEN_KEY,
+      expiresIn: process.env.ACCESS_USER_TOKEN_EXP,
+    });
+
+    return { acceesToken };
   }
   findAll() {
     return `This action returns all users`;

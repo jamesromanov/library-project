@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Res,
+  Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -18,6 +19,7 @@ import {
   ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { JwtGuard } from 'src/guards/jwt.guard';
 import { RolesGuard } from 'src/guards/roles.guard';
@@ -26,7 +28,7 @@ import { Roles } from 'src/guards/roles';
 import { AdminRole } from 'src/admin-auth/admin.role';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserAuthDto } from './dto/user-login.auth.dto';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -45,7 +47,7 @@ export class UsersController {
     return this.usersService.register(createUserDto);
   }
   @ApiOperation({
-    summary: 'admin login',
+    summary: 'user login',
     description: "admin royhatdan o'tish",
   })
   @ApiCreatedResponse({
@@ -58,7 +60,9 @@ export class UsersController {
   login(
     @Body() loginAuthDto: LoginUserAuthDto,
     @Res({ passthrough: true }) res: Response,
-  ) {}
+  ) {
+    return this.usersService.login(loginAuthDto, res);
+  }
 
   // USER find All method
   @UseGuards(JwtGuard, RolesGuard)
@@ -74,12 +78,28 @@ export class UsersController {
   findAll() {
     return this.usersService.findAll();
   }
-
+  @ApiOperation({
+    summary: 'access token olish',
+    description:
+      'cookida saqlanga refresh token asosida access token olinadi userlar uchun',
+  })
+  @ApiUnauthorizedResponse({
+    description: "Tokenda yoki Hato ma'lumot kiritilgandagi xatolik",
+  })
+  @ApiCreatedResponse({ description: 'Muvaffaqiyatli olindi' })
+  @ApiConflictResponse({ description: 'Conflict xatolik' })
+  @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
+  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
+  @Post('refresh')
+  refreshToken(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    return this.usersService.refreshTokenUser(req, res);
+  }
+  // USER update
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(AdminRole.ADMIN, AdminRole.USER)
   @ApiOperation({
-    summary: 'barcha foydalanuvchilarni olish (adminlar uchun)',
-    description: 'barcha foydalanuvchilarni olish admin lar uchun',
+    summary: 'foydalanuvchini olish (adminlar uchun)',
+    description: 'foydalanuvchi id orqali olish admin lar uchun',
   })
   @ApiOkResponse({ description: 'Muvaffaqiyatli olindi' })
   @ApiConflictResponse({ description: 'Conflict xatolik' })
