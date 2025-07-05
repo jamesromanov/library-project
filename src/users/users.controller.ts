@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Res,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -24,6 +25,8 @@ import { Role } from 'generated/prisma';
 import { Roles } from 'src/guards/roles';
 import { AdminRole } from 'src/admin-auth/admin.role';
 import { CreateUserDto } from './dto/create-user.dto';
+import { LoginUserAuthDto } from './dto/user-login.auth.dto';
+import { Response } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -41,7 +44,23 @@ export class UsersController {
   register(@Body() createUserDto: CreateUserDto) {
     return this.usersService.register(createUserDto);
   }
+  @ApiOperation({
+    summary: 'admin login',
+    description: "admin royhatdan o'tish",
+  })
+  @ApiCreatedResponse({
+    description: "Muvaffaqiyatli ro'yhatdan o'tildi",
+  })
+  @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
+  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
+  @ApiConflictResponse({ description: 'Conflict xatolik' })
+  @Post('login')
+  login(
+    @Body() loginAuthDto: LoginUserAuthDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {}
 
+  // USER find All method
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(AdminRole.ADMIN)
   @ApiOperation({

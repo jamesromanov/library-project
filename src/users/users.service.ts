@@ -12,7 +12,7 @@ import { Role, User } from 'generated/prisma';
 import { AdminRole } from 'src/admin-auth/admin.role';
 import * as bcyrpt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 
 @Injectable()
 export class UsersService {
@@ -28,7 +28,7 @@ export class UsersService {
     await this.prism.user.create({ data: createUserDto });
     return "Muvaffaqiyatli qo'shildi";
   }
-  async login(loginAuthDto: LoginUserAuthDto, req: Request) {
+  async login(loginAuthDto: LoginUserAuthDto, res: Response) {
     const { email, password } = loginAuthDto;
     let user: User;
     const userCache = await this.redis.get(`user:${email}`);
@@ -39,6 +39,9 @@ export class UsersService {
 
     if (userCache) user = JSON.parse(userCache);
     else user = userExists;
+
+    const comparePassword = await bcyrpt.compare(password, user.password);
+    if (!comparePassword) throw new NotFoundException('Parol yoki email xato');
 
     await this.redis.set(`user:${email}`, user, 60);
 
@@ -52,8 +55,18 @@ export class UsersService {
       expiresIn: process.env.REFRESH_USER_TOKEN_EXP,
     });
 
-    const comparePassword = await bcyrpt.compare(password, user.password);
-    if (!comparePassword) throw new NotFoundException('Parol yoki email xato');
+    const options = {
+      maxAge: eval(process.env.COOKIE_EXP as string),
+      httpOnly: true,
+      secure: false,
+    };
+    res.cookie('public-token', refreshToken, options);
+    await this.prism.user.update({
+      where: { id: user.id },
+      data: { refreshToken },
+    });
+
+    return "Muvaffaqiyatli ro'yxatdan o'tildi";
   }
   findAll() {
     return `This action returns all users`;
