@@ -104,6 +104,7 @@ export class UsersController {
   // USER update
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(AdminRole.ADMIN, AdminRole.USER)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'foydalanuvchini olish (adminlar uchun)',
     description: 'foydalanuvchi id orqali olish admin lar uchun',
@@ -113,7 +114,7 @@ export class UsersController {
   @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+    return this.usersService.findOne(id);
   }
 
   @Patch(':id')
