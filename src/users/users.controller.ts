@@ -19,6 +19,7 @@ import {
   ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { JwtGuard } from 'src/guards/jwt.guard';
@@ -63,21 +64,7 @@ export class UsersController {
   ) {
     return this.usersService.login(loginAuthDto, res);
   }
-
-  // USER find All method
-  @UseGuards(JwtGuard, RolesGuard)
-  @Roles(AdminRole.ADMIN)
-  @ApiOperation({
-    summary: 'barcha foydalanuvchilarni olish (adminlar uchun)',
-    description: 'barcha foydalanuvchilarni olish admin lar uchun',
-  })
-  @ApiOkResponse({ description: 'Muvaffaqiyatli olindi' })
-  @ApiConflictResponse({ description: 'Conflict xatolik' })
-  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
+  // USER refresh the token
   @ApiOperation({
     summary: 'access token olish',
     description:
@@ -93,6 +80,20 @@ export class UsersController {
   @Post('refresh')
   refreshToken(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     return this.usersService.refreshTokenUser(req, res);
+  }
+  // USER find All method
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(AdminRole.ADMIN)
+  @ApiOperation({
+    summary: 'barcha foydalanuvchilarni olish (adminlar uchun)',
+    description: 'barcha foydalanuvchilarni olish admin lar uchun',
+  })
+  @ApiOkResponse({ description: 'Muvaffaqiyatli olindi' })
+  @ApiConflictResponse({ description: 'Conflict xatolik' })
+  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
+  @Get()
+  findAll() {
+    return this.usersService.findAll();
   }
   // USER update
   @UseGuards(JwtGuard, RolesGuard)
