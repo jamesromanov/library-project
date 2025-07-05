@@ -1,18 +1,27 @@
-import { ApiOperation, ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsString,
   IsStrongPassword,
   Matches,
 } from 'class-validator';
+import { AdminRole } from 'src/admin-auth/admin.role';
 
-// ADMIN login operatoins
-export class LoginAdminAuthDto {
+export class CreateUserDto {
+  @ApiProperty({
+    type: 'string',
+    default: 'Avazbek',
+    description: 'User ismi',
+  })
+  @IsString()
+  name: string;
+
   @ApiProperty({
     type: 'string',
     default: 'exmaple@gmail.com',
-    description: 'Admin emaili',
+    description: 'User emaili',
   })
   @IsNotEmpty()
   @IsString()
@@ -20,12 +29,12 @@ export class LoginAdminAuthDto {
   @Matches(/^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/, {
     message: 'Email formati xato.',
   })
-  email: string;  
+  email: string;
 
   @ApiProperty({
     type: 'string',
     default: 'kuchliParol1:!',
-    description: 'Admin paroli',
+    description: 'User paroli',
   })
   @IsNotEmpty()
   @IsString()
@@ -35,4 +44,13 @@ export class LoginAdminAuthDto {
       'Parol kamida 1 ta katta harf, bitta kichkina harf, bitta raqam va bitta belgidan iborat bolishi kerak.',
   })
   password: string;
+
+  @ApiProperty({
+    type: 'string',
+    default: AdminRole.USER,
+    description: 'User role',
+  })
+  @IsNotEmpty()
+  @IsEnum(AdminRole, { message: "Role xato kiritildi ADMIN bo'lishi kerak." })
+  role: AdminRole;
 }

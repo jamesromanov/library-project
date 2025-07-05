@@ -16,6 +16,7 @@ import { BooksModule } from './books/books.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { NewsModule } from './news/news.module';
 import { ApplicationsModule } from './applications/applications.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { ApplicationsModule } from './applications/applications.module';
     CloudinaryModule,
     NewsModule,
     ApplicationsModule,
+    UsersModule,
   ],
   providers: [
     {
