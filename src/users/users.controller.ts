@@ -9,11 +9,13 @@ import {
   UseGuards,
   Res,
   Req,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
@@ -24,12 +26,13 @@ import {
 } from '@nestjs/swagger';
 import { JwtGuard } from 'src/guards/jwt.guard';
 import { RolesGuard } from 'src/guards/roles.guard';
-import { Role } from 'generated/prisma';
+import { Role, User } from 'generated/prisma';
 import { Roles } from 'src/guards/roles';
 import { AdminRole } from 'src/admin-auth/admin.role';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserAuthDto } from './dto/user-login.auth.dto';
 import { Request, Response } from 'express';
+import { UserQueryDto } from './dto/user.query.dto';
 
 @Controller('users')
 export class UsersController {
@@ -84,6 +87,7 @@ export class UsersController {
   // USER find All method
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(AdminRole.ADMIN)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'barcha foydalanuvchilarni olish (adminlar uchun)',
     description: 'barcha foydalanuvchilarni olish admin lar uchun',
@@ -91,9 +95,11 @@ export class UsersController {
   @ApiOkResponse({ description: 'Muvaffaqiyatli olindi' })
   @ApiConflictResponse({ description: 'Conflict xatolik' })
   @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
+  @ApiQuery({ name: 'limit', type: 'number' })
+  @ApiQuery({ name: 'page', type: 'number' })
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query() query: UserQueryDto) {
+    return this.usersService.findAll(query);
   }
   // USER update
   @UseGuards(JwtGuard, RolesGuard)
