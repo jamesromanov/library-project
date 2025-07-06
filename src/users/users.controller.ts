@@ -138,6 +138,7 @@ export class UsersController {
   // USER update
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(AdminRole.ADMIN, AdminRole.USER)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: "foydalanuvchi ma'lumorlarini yangilash",
     description: "foydalanuvchini ma'lumotlarini yangilash",
@@ -157,6 +158,7 @@ export class UsersController {
   // USER delete
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(AdminRole.ADMIN, AdminRole.USER)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: "foydalanuvchini o'chirish",
     description: "foydalanuvchini o'chirish",
