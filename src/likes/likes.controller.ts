@@ -47,6 +47,7 @@ export class LikesController {
     return this.likesService.create(createLikeDto, req);
   }
 
+  @UseGuards(JwtGuard)
   @ApiOperation({
     summary: 'like olib tashlash',
     description: 'kitobdan bosilgan likeni olib tashlash',

@@ -86,6 +86,7 @@ export class UsersController {
   }
   // USER logout
   @ApiBearerAuth()
+  @UseGuards(JwtGuard)
   @ApiOperation({
     summary: 'foydalanuvchi logout',
     description: 'foydalanuvchi logout qiladi',
@@ -135,6 +136,8 @@ export class UsersController {
   }
 
   // USER update
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(AdminRole.ADMIN, AdminRole.USER)
   @ApiOperation({
     summary: "foydalanuvchi ma'lumorlarini yangilash",
     description: "foydalanuvchini ma'lumotlarini yangilash",
@@ -152,6 +155,8 @@ export class UsersController {
   }
 
   // USER delete
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(AdminRole.ADMIN, AdminRole.USER)
   @ApiOperation({
     summary: "foydalanuvchini o'chirish",
     description: "foydalanuvchini o'chirish",
