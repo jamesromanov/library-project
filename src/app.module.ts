@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AdminAuthModule } from './admin-auth/admin-auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { RedisService } from './redis/redis.service';
@@ -17,6 +17,8 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { NewsModule } from './news/news.module';
 import { ApplicationsModule } from './applications/applications.module';
 import { UsersModule } from './users/users.module';
+import { LikesModule } from './likes/likes.module';
+import { GuardMiddleware } from './nest.middleware';
 
 @Module({
   imports: [
@@ -44,6 +46,7 @@ import { UsersModule } from './users/users.module';
     NewsModule,
     ApplicationsModule,
     UsersModule,
+    LikesModule,
   ],
   providers: [
     {
@@ -56,4 +59,8 @@ import { UsersModule } from './users/users.module';
     // },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(GuardMiddleware).forRoutes('*');
+  }
+}

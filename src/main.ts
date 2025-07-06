@@ -6,6 +6,7 @@ import * as cookieParser from 'cookie-parser';
 import { WINSTON_MODULE_NEST_PROVIDER, WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import * as path from 'path';
+import { NextFunction, Request, Response } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

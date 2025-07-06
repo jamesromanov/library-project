@@ -84,6 +84,23 @@ export class UsersController {
   refreshToken(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     return this.usersService.refreshTokenUser(req, res);
   }
+  // USER logout
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'foydalanuvchi logout',
+    description: 'foydalanuvchi logout qiladi',
+  })
+  @ApiUnauthorizedResponse({
+    description: "Tokenda yoki Hato ma'lumot kiritilgandagi xatolik",
+  })
+  @ApiCreatedResponse({ description: 'Muvaffaqiyatli olindi' })
+  @ApiConflictResponse({ description: 'Conflict xatolik' })
+  @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
+  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
+  @Post('logout')
+  logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    return this.usersService.logout(req, res);
+  }
   // USER find All method
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(AdminRole.ADMIN)

@@ -68,4 +68,12 @@ export class UpdateUserDto {
   @IsOptional()
   @IsBoolean()
   active?: boolean;
+  @ApiProperty({
+    type: 'string',
+    required: false,
+    description: 'foydalanuvchi refresh tokeni',
+  })
+  @IsOptional()
+  @IsString()
+  refreshToken?: string | null;
 }

@@ -86,7 +86,7 @@ model New {
 
   @@index([updatedAt, language, createdAt])
 }
-
+// LIKES table
 model Like {
   id String @id @default(ulid())
   user User @relation(fields: [userId], references: [id])

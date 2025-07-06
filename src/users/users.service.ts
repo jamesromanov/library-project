@@ -106,6 +106,41 @@ export class UsersService {
 
     return { acceesToken };
   }
+
+  async logout(req: Request, res: Response) {
+    const token = req.cookies['public-token'];
+    const accessToken = req.headers.authorization?.split(' ')[1];
+    if (!token || !accessToken) throw new NotFoundException('Token topilmadi');
+
+    try {
+      const validateToken = await this.jwt.verifyAsync(token, {
+        secret: process.env.REFRESH_USER_TOKEN_SECRET,
+      });
+
+      const userExists = await this.prisma.user.findUnique({
+        where: { refreshToken: token },
+      });
+      if (!userExists) throw new NotFoundException('Token topilmadi');
+      if (userExists.id !== validateToken.id)
+        throw new UnauthorizedException('Token yaroqsiz');
+      await this.update(userExists.id, { refreshToken: null });
+      await this.addToTheblaclList(accessToken);
+      res.clearCookie('public-token', {
+        maxAge: eval(process.env.COOKIE_EXP as string),
+        httpOnly: true,
+        secure: false,
+      });
+      return 'Muvaffaqiyatli chiqildi';
+    } catch (error) {
+      throw new UnauthorizedException(error.message);
+    }
+  }
+
+  async addToTheblaclList(token: string) {
+    const time = this.jwt.decode(token) as any;
+    const now = Date.now();
+    return await this.redis.set(`blacklist:token:${token}`, token, now - time);
+  }
   async findAll(query: UserQueryDto) {
     const page = query.page || 1;
     const limit = query.limit || 10;

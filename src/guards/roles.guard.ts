@@ -10,6 +10,7 @@ import { AdminRole } from 'src/admin-auth/admin.role';
 import { ROLES_KEY } from './roles';
 import { Request } from 'express';
 import { Languages } from 'src/books/languages';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
