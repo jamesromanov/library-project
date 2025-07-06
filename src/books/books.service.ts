@@ -98,6 +98,9 @@ export class BooksService {
             createdAt: 'asc',
           },
         ],
+        include: {
+          likes: true,
+        },
       }),
     ]);
     if (cacheBooks && cacheBooksCount) {
@@ -138,6 +141,7 @@ export class BooksService {
     if (bookCache) return JSON.parse(bookCache);
     const bookExists = await this.prisma.book.findUnique({
       where: { id, active: active || true },
+      include: { likes: true },
     });
 
     if (!bookExists) throw new NotFoundException('Bu id dagi kitob topilmadi.');
@@ -248,6 +252,7 @@ export class BooksService {
             createdAt: 'asc',
           },
         ],
+        include: { likes: true },
       }),
     ]);
     console.log(booksAll);
