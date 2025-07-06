@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { LikesService } from './likes.service';
 import { CreateLikeDto } from './dto/create-like.dto';
-import { UpdateLikeDto } from './dto/update-like.dto';
 import { Request } from 'express';
 import {
   ApiBadRequestResponse,
