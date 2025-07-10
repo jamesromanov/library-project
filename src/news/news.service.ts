@@ -142,7 +142,7 @@ export class NewsService {
     return newExists;
   }
 
-  // UPDATE news only for admins
+  // UPDATE newss only for admins
   async update(
     id: string,
     updateNewsDto: UpdateNewsDto,
