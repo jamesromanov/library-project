@@ -41,7 +41,12 @@ export class LikesService {
     const userId = req.user.id;
     const likesCache = await this.redis.get(`likes:all:${userId}`);
     if (likesCache) return JSON.parse(likesCache);
-    const likes = await this.prisma.like.findMany({ where: { userId } });
+    const likes = await this.prisma.like.findMany({
+      where: { userId },
+      include: {
+        book: true,
+      },
+    });
     if (likes.length === 0)
       throw new NotFoundException('Hech qanday likelar topilmadi');
     await this.redis.set(`likes:all:${userId}`, likes, 30);

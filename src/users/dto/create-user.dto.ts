@@ -52,9 +52,9 @@ export class CreateUserDto {
     default: AdminRole.USER,
     description: 'User role',
   })
-  @IsNotEmpty()
+  @IsOptional()
   @IsEnum(AdminRole, { message: "Role xato kiritildi USER bo'lishi kerak." })
-  role: AdminRole;
+  role: AdminRole = AdminRole.USER;
 
   @ApiProperty({
     type: 'boolean',
