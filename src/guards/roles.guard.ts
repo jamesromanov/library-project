@@ -11,6 +11,8 @@ import { ROLES_KEY } from './roles';
 import { Request } from 'express';
 import { Languages } from 'src/books/languages';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { CustomExpress } from 'src/global.type';
+import { User } from 'generated/prisma';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -25,7 +27,7 @@ export class RolesGuard implements CanActivate {
       );
       if (!requiredRole) return true;
 
-      const { user } = context.switchToHttp().getRequest<Request>();
+      const { user } = context.switchToHttp().getRequest<CustomExpress>();
       if (!user) throw new UnauthorizedException("Ro'yhatdan o'tilmagan");
       if (!requiredRole.includes(user?.role))
         throw new UnauthorizedException(
