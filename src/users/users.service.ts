@@ -15,6 +15,7 @@ import * as bcyrpt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
 import { UserQueryDto } from './dto/user.query.dto';
+import { CustomExpress } from 'src/global.type';
 
 @Injectable()
 export class UsersService {
@@ -80,7 +81,7 @@ export class UsersService {
     return "Muvaffaqiyatli ro'yxatdan o'tildi";
   }
 
-  async refreshTokenUser(req: Request, res: Response) {
+  async refreshTokenUser(req: CustomExpress, res: Response) {
     const token = req.cookies['public-token'];
     if (!token) throw new NotFoundException('Token topilmadi');
 
@@ -107,7 +108,7 @@ export class UsersService {
     return { acceesToken };
   }
 
-  async logout(req: Request, res: Response) {
+  async logout(req: CustomExpress, res: Response) {
     const token = req.cookies['public-token'];
     const accessToken = req.headers.authorization?.split(' ')[1];
     if (!token || !accessToken) throw new NotFoundException('Token topilmadi');
@@ -225,7 +226,7 @@ export class UsersService {
     return "Muvaffaqiyatli o'chirildi";
   }
 
-  async getMe(req: Request) {
+  async getMe(req: CustomExpress) {
     const { user } = req;
     if (!user) throw new UnauthorizedException('Royxatdan otilmagan');
     const userExists = await this.prisma.user.findUnique({
