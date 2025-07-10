@@ -51,26 +51,7 @@ export class AdminAuthController {
   @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @ApiConflictResponse({ description: 'Conflict xatolik' })
   @Post('login')
-  loginAdmin(
-    @Body() loginAdminAuthDto: LoginAdminAuthDto,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    return this.adminAuthService.loginAdmin(loginAdminAuthDto, res);
-  }
-
-  @ApiOperation({
-    summary: 'access token olish',
-    description: 'cookida saqlanga refresh token asosida access token olinadi',
-  })
-  @ApiUnauthorizedResponse({
-    description: "Tokenda yoki Hato ma'lumot kiritilgandagi xatolik",
-  })
-  @ApiCreatedResponse({ description: 'Muvaffaqiyatli olindi' })
-  @ApiConflictResponse({ description: 'Conflict xatolik' })
-  @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
-  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
-  @Post('refresh')
-  refreshToken(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    return this.adminAuthService.refreshToken(req, res);
+  loginAdmin(@Body() loginAdminAuthDto: LoginAdminAuthDto) {
+    return this.adminAuthService.loginAdmin(loginAdminAuthDto);
   }
 }

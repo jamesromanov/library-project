@@ -45,7 +45,7 @@ export class AdminAuthService {
   }
 
   // ADMIN login refresh based token sharing
-  async loginAdmin(loginAdminAuthDto: LoginAdminAuthDto, res: Response) {
+  async loginAdmin(loginAdminAuthDto: LoginAdminAuthDto) {
     const { email, password } = loginAdminAuthDto;
     let admin: Admin;
     const adminExistsCache = await this.redis.get(`admin:${email}`);
@@ -74,41 +74,18 @@ export class AdminAuthService {
       expiresIn: process.env.REFRESH_TOKEN_EXP,
     });
 
-    res.cookie('jwt', refreshToken, {
-      maxAge: eval(process.env.COOKIE_EXP as string),
-      secure: false,
-      httpOnly: true,
+    const accessToken = await this.jwt.signAsync(payload, {
+      secret: process.env.ACCESS_TOKEN_KEY,
+      expiresIn: process.env.ACCESS_TOKEN_EXP,
     });
 
     await this.prisma.admin.update({
       where: { email },
       data: { refreshToken },
     });
-    return 'Muvaffaqiyatli royhatdan otildi.';
+    return { refreshToken, accessToken };
   }
-
-  // ADMIN access token refresh by refreshToken
-  async refreshToken(req: Request, res: Response) {
-    const refreshToken = req.cookies.jwt;
-    const validateToken = await this.jwt.verifyAsync(refreshToken, {
-      secret: process.env.REFRESH_TOKEN_KEY,
-    });
-
-    const adminExists = await this.findByToken(refreshToken);
-    if (adminExists.id !== validateToken.id)
-      throw new UnauthorizedException('Token yaroqsiz.');
-
-    const payload = {
-      id: adminExists.id,
-      role: adminExists.role,
-    };
-    const accessToken = await this.jwt.signAsync(payload, {
-      secret: process.env.ACCESS_TOKEN_KEY,
-      expiresIn: process.env.ACCESS_TOKEN_EXP,
-    });
-    return { accessToken };
-  }
-
+  // FIND admin by token
   async findByToken(token: string) {
     const adminExistsCache = await this.redis.get(`admin:token:${token}`);
     if (adminExistsCache) return JSON.parse(adminExistsCache);

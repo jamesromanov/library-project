@@ -38,7 +38,7 @@ export class UsersService {
     await this.prisma.user.create({ data: createUserDto });
     return "Muvaffaqiyatli qo'shildi";
   }
-  async login(loginAuthDto: LoginUserAuthDto, res: Response) {
+  async login(loginAuthDto: LoginUserAuthDto) {
     const { email, password } = loginAuthDto;
     let user: User;
     const userCache = await this.redis.get(`user:${email}`);
@@ -67,70 +67,37 @@ export class UsersService {
       expiresIn: process.env.REFRESH_USER_TOKEN_EXP,
     });
 
-    const options = {
-      maxAge: eval(process.env.COOKIE_EXP as string),
-      httpOnly: true,
-      secure: false,
-    };
-    res.cookie('public-token', refreshToken, options);
-    await this.prisma.user.update({
-      where: { id: user.id },
-      data: { refreshToken },
-    });
-
-    return "Muvaffaqiyatli ro'yxatdan o'tildi";
-  }
-
-  async refreshTokenUser(req: CustomExpress, res: Response) {
-    const token = req.cookies['public-token'];
-    if (!token) throw new NotFoundException('Token topilmadi');
-
-    const verifyToken = await this.jwt.verifyAsync(token, {
-      secret: process.env.REFRESH_USER_TOKEN_SECRET,
-    });
-
-    const userExists = await this.prisma.user.findUnique({
-      where: { refreshToken: token, active: true },
-    });
-
-    if (userExists?.id !== verifyToken.id || !userExists)
-      throw new NotFoundException('Token yaroqsiz');
-    const payload = {
-      id: userExists.id,
-      role: userExists.role,
-    };
-
     const acceesToken = await this.jwt.signAsync(payload, {
       secret: process.env.ACCESS_TOKEN_KEY,
       expiresIn: process.env.ACCESS_TOKEN_EXP,
     });
 
-    return { acceesToken };
-  }
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { refreshToken },
+    });
 
+    return { refreshToken, acceesToken };
+  }
+  // User log out
   async logout(req: CustomExpress, res: Response) {
-    const token = req.cookies['public-token'];
     const accessToken = req.headers.authorization?.split(' ')[1];
-    if (!token || !accessToken) throw new NotFoundException('Token topilmadi');
+    if (!accessToken) throw new NotFoundException('Token topilmadi');
 
     try {
-      const validateToken = await this.jwt.verifyAsync(token, {
-        secret: process.env.REFRESH_USER_TOKEN_SECRET,
+      const validateToken = await this.jwt.verifyAsync(accessToken, {
+        secret: process.env.ACCESS_USER_TOKEN_KEY,
       });
 
       const userExists = await this.prisma.user.findUnique({
-        where: { refreshToken: token },
+        where: { id: validateToken.id },
       });
       if (!userExists) throw new NotFoundException('Token topilmadi');
       if (userExists.id !== validateToken.id)
         throw new UnauthorizedException('Token yaroqsiz');
       await this.update(userExists.id, { refreshToken: null });
       await this.addToTheblaclList(accessToken);
-      res.clearCookie('public-token', {
-        maxAge: eval(process.env.COOKIE_EXP as string),
-        httpOnly: true,
-        secure: false,
-      });
+
       return 'Muvaffaqiyatli chiqildi';
     } catch (error) {
       throw new UnauthorizedException(error.message);

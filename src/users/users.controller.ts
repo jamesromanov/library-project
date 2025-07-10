@@ -62,31 +62,8 @@ export class UsersController {
   @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @ApiConflictResponse({ description: 'Conflict xatolik' })
   @Post('login')
-  login(
-    @Body() loginAuthDto: LoginUserAuthDto,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    return this.usersService.login(loginAuthDto, res);
-  }
-  // USER refresh the token
-  @ApiOperation({
-    summary: 'access token olish',
-    description:
-      'cookida saqlanga refresh token asosida access token olinadi userlar uchun',
-  })
-  @ApiUnauthorizedResponse({
-    description: "Tokenda yoki Hato ma'lumot kiritilgandagi xatolik",
-  })
-  @ApiCreatedResponse({ description: 'Muvaffaqiyatli olindi' })
-  @ApiConflictResponse({ description: 'Conflict xatolik' })
-  @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
-  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
-  @Post('refresh')
-  refreshToken(
-    @Req() req: CustomExpress,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    return this.usersService.refreshTokenUser(req, res);
+  login(@Body() loginAuthDto: LoginUserAuthDto) {
+    return this.usersService.login(loginAuthDto);
   }
   // USER logout
   @ApiBearerAuth()
