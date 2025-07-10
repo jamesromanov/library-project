@@ -48,6 +48,7 @@ export class LikesController {
   }
 
   @UseGuards(JwtGuard)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'like olib tashlash',
     description: 'kitobdan bosilgan likeni olib tashlash',
