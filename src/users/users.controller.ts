@@ -33,6 +33,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserAuthDto } from './dto/user-login.auth.dto';
 import { Request, Response } from 'express';
 import { UserQueryDto } from './dto/user.query.dto';
+import { CustomExpress } from 'src/global.type';
 
 @Controller('users')
 export class UsersController {
@@ -81,7 +82,10 @@ export class UsersController {
   @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
   @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @Post('refresh')
-  refreshToken(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+  refreshToken(
+    @Req() req: CustomExpress,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     return this.usersService.refreshTokenUser(req, res);
   }
   // USER logout
@@ -99,7 +103,7 @@ export class UsersController {
   @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
   @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @Post('logout')
-  logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+  logout(@Req() req: CustomExpress, @Res({ passthrough: true }) res: Response) {
     return this.usersService.logout(req, res);
   }
   // USER find All method
@@ -188,7 +192,7 @@ export class UsersController {
   @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
   @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @Get('get/me')
-  getMe(@Req() req: Request) {
+  getMe(@Req() req: CustomExpress) {
     return this.usersService.getMe(req);
   }
 }
