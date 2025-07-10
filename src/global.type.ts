@@ -1,19 +1,4 @@
-import { AdminRole } from './admin-auth/admin.role';
+import { Request } from 'express';
+import { User } from 'generated/prisma';
 
-export interface User {
-  name: string | null;
-  id: string;
-  email: string;
-  password: string;
-  refreshToken: string | null;
-  role: AdminRole;
-  createdAt: Date;
-}
-
-declare global {
-  namespace Express {
-    interface Request {
-      user: User;
-    }
-  }
-}
+export type CustomExpress = Request & { user: User };

@@ -7,6 +7,8 @@ import { CreateLikeDto } from './dto/create-like.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Request } from 'express';
 import { RedisService } from 'src/redis/redis.service';
+import { User } from 'generated/prisma';
+import { CustomExpress } from 'src/global.type';
 
 @Injectable()
 export class LikesService {
@@ -14,7 +16,7 @@ export class LikesService {
     private prisma: PrismaService,
     private redis: RedisService,
   ) {}
-  async create(createLikeDto: CreateLikeDto, req: Request) {
+  async create(createLikeDto: CreateLikeDto, req: CustomExpress) {
     const likesExists = await this.prisma.like.findMany({
       where: { userId: req.user.id, bookId: createLikeDto.bookId },
     });
@@ -35,7 +37,7 @@ export class LikesService {
       data: { ...createLikeDto, userId: userExists.id },
     });
   }
-  async getLikes(req: Request) {
+  async getLikes(req: CustomExpress) {
     const userId = req.user.id;
     const likesCache = await this.redis.get(`likes:all:${userId}`);
     if (likesCache) return JSON.parse(likesCache);

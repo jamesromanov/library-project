@@ -24,6 +24,7 @@ import {
 } from '@nestjs/swagger';
 import { JwtGuard } from 'src/guards/jwt.guard';
 import { RolesGuard } from 'src/guards/roles.guard';
+import { CustomExpress } from 'src/global.type';
 
 @Controller('likes')
 export class LikesController {
@@ -43,7 +44,7 @@ export class LikesController {
   @ApiUnauthorizedResponse({ description: 'Token yaroqsiz yoki topilmadi' })
   @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @Post()
-  create(@Body() createLikeDto: CreateLikeDto, @Req() req: Request) {
+  create(@Body() createLikeDto: CreateLikeDto, @Req() req: CustomExpress) {
     return this.likesService.create(createLikeDto, req);
   }
 
@@ -83,7 +84,7 @@ export class LikesController {
   @ApiUnauthorizedResponse({ description: 'Token yaroqsiz yoki topilmadi' })
   @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
   @Get('likes')
-  getLikes(@Req() req: Request) {
+  getLikes(@Req() req: CustomExpress) {
     return this.likesService.getLikes(req);
   }
 }
