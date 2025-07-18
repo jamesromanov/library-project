@@ -6,10 +6,12 @@ import { RedisService } from 'src/redis/redis.service';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from 'src/strategies/jwt.strategy';
+import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 
 @Module({
   imports: [
     PassportModule,
+    CloudinaryModule,
     JwtModule.register({
       secret: process.env.TOKEN_SECRET,
       signOptions: {

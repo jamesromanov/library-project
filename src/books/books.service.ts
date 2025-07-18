@@ -60,6 +60,7 @@ export class BooksService {
     if (createBookDto.active === true)
       await this.addBookSAutocomplete(book as any);
 
+    await this.redis.del('sts:admin');
     return "Muvaffaqiyatli qo'shildi";
   }
   // FIND all methond by pagination
@@ -206,6 +207,8 @@ export class BooksService {
     if (updateBookDto.active === true)
       await this.addBookSAutocomplete(updatedBook as any);
     await this.redis.del(`book:id:${id}`);
+    await this.redis.del('sts:admin');
+
     return updatedBook;
   }
   // BOOK delete soft delete

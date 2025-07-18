@@ -16,7 +16,12 @@ datasource db {
 // ADMIN model
 model Admin {
   id String @id @default(uuid())
-  name  String?
+  firstName  String?
+  lastName String?
+  birthday String
+  city String
+  postalCode String
+  image String
   email String @unique
   password String
   refreshToken String? @unique

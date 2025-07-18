@@ -15,19 +15,39 @@ import { RedisService } from 'src/redis/redis.service';
 import { Admin } from 'generated/prisma';
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { AdminInterface } from './admin';
+import { UpdateAdminAuthDto } from './dto/update-admin.auth.dto';
+import { throwIfEmpty } from 'rxjs';
+import { CustomExpress } from 'src/global.type';
+import { userInfo } from 'os';
 
 @Injectable()
 export class AdminAuthService {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly cloudinaryService: CloudinaryService,
     private redis: RedisService,
     private jwt: JwtService,
   ) {}
   // ADMIN register (only once if the admin doesn't exist) can be only one admin
-  async createAdminAuth(createAdminAuth: CreateAdminAuthDto) {
+  async createAdminAuth(
+    createAdminAuth: CreateAdminAuthDto,
+    image: Express.Multer.File,
+  ) {
     const adminExists = await this.prisma.admin.findMany({
       where: { role: AdminRole.ADMIN },
     });
+
+    const imageUrl = await this.cloudinaryService
+      .uploadImage(image)
+      .then((data) => {
+        return data.secure_url;
+      })
+      .catch((err) => {
+        console.log(err);
+        throw new BadRequestException('Rasm yuklashda haxtolik');
+      });
     console.log(adminExists);
 
     if (adminExists.length && adminExists[0].role === AdminRole.ADMIN) {
@@ -40,7 +60,10 @@ export class AdminAuthService {
       createAdminAuth.password,
       Number(process.env.HASH_SALT),
     );
-    await this.prisma.admin.create({ data: createAdminAuth });
+    await this.prisma.admin.create({
+      data: { ...createAdminAuth, image: imageUrl },
+    });
+    console.log(imageUrl, createAdminAuth);
     return "Muvaffaqiyatli Qo'shildi!";
   }
 
@@ -95,10 +118,81 @@ export class AdminAuthService {
     if (!adminExists) throw new NotFoundException('Admin topilmadi.');
     return adminExists;
   }
-
+  // ADMIN findone
   async findOne(id: string) {
-    const adminExists = await this.prisma.admin.findUnique({ where: { id } });
+    const adminCache = await this.redis.get(`adminid`);
+    if (adminCache) return JSON.parse(adminCache);
+    const adminExists = await this.prisma.admin.findUnique({
+      where: { id },
+    });
     if (!adminExists) throw new UnauthorizedException('Admin topilmadi.');
+    await this.redis.set('adminid', adminExists);
     return adminExists;
+  }
+  // [GET] admin
+  async getAdmin() {
+    const adminCache = await this.redis.get(`admin`);
+    console.log(adminCache);
+    if (adminCache) return JSON.parse(adminCache);
+    const adminExists = await this.prisma.admin.findMany({
+      where: { role: AdminRole.ADMIN },
+    });
+    if (adminExists.length === 0)
+      throw new NotFoundException('Admin topilmadi');
+    const adminHide = JSON.parse(JSON.stringify(adminExists[0]));
+    delete adminHide.refreshToken;
+    delete adminHide.password;
+    delete adminHide.role;
+    await this.redis.set('admin', adminHide);
+    return adminHide as AdminInterface;
+  }
+  //  [PUT] admin
+  async updateAdmin(
+    req: CustomExpress,
+    updateAdminAuthDto: UpdateAdminAuthDto,
+    image?: Express.Multer.File,
+  ) {
+    console.log(req.user.id, 'sadasdasasd');
+    const adminExists = await this.findOne(req.user.id);
+    updateAdminAuthDto.password =
+      updateAdminAuthDto.password !== undefined
+        ? await bcyrpt.hash(updateAdminAuthDto.password, 12)
+        : undefined;
+    const imageUrl =
+      image !== undefined
+        ? await this.cloudinaryService
+            .uploadImage(image)
+            .then(async (data) => {
+              return await data.secure_url;
+            })
+            .catch((err) => {
+              throw new BadRequestException('Rasm yangilashda hatolik');
+            })
+        : undefined;
+    console.log(adminExists);
+
+    const updatedAdmin = await this.prisma.admin.update({
+      where: { id: adminExists.id },
+      data: { ...updateAdminAuthDto, image: imageUrl },
+    });
+    await this.redis.del('admin:get');
+    await this.redis.del('admin');
+    return updatedAdmin;
+  }
+
+  async getStatistics() {
+    const stsCache = await this.redis.get(`sts:admin`);
+    console.log(stsCache);
+    if (stsCache) return JSON.parse(stsCache);
+
+    const [books, news, users, likes] = await Promise.all([
+      this.prisma.book.count(),
+      this.prisma.new.count(),
+      this.prisma.user.count(),
+      this.prisma.like.count(),
+    ]);
+
+    await this.redis.set(`sts:admin`, { books, news, users, likes });
+    return { books, news, users, likes };
   }
 }
