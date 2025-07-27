@@ -41,7 +41,5 @@ jobs:
             cd /home/ubuntu/library-project
             git reset --hard
             git pull origin main
-            npm install --production 
-            npm install --save-dev @types/node
             npm run build
             pm2 restart library
