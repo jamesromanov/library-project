@@ -33,6 +33,7 @@ export class LikesService {
     if (!bookExists)
       throw new NotFoundException('Berilgan iddagi kitob topilmadi');
 
+    await this.redis.del('likes:all');
     return await this.prisma.like.create({
       data: { ...createLikeDto, userId: userExists.id },
     });
@@ -58,5 +59,21 @@ export class LikesService {
     if (!likeExists) throw new BadRequestException('Oldin like bosilmagan');
 
     return await this.prisma.like.delete({ where: { id } });
+  }
+
+  async getAllLikes() {
+    const likesCache = await this.redis.get(`likes:all`);
+    console.log(likesCache);
+    if (likesCache) return JSON.parse(likesCache);
+
+    const likes = await this.prisma.like.findMany({
+      include: {
+        book: true,
+      },
+    });
+    if (likes.length === 0)
+      throw new NotFoundException('Hech qanday likelar topilmadi');
+    await this.redis.set('likes:all', likes);
+    return likes;
   }
 }

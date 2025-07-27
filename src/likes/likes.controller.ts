@@ -15,10 +15,12 @@ import { Request } from 'express';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiConflictResponse,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiServiceUnavailableResponse,
   ApiUnauthorizedResponse,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
@@ -68,8 +70,6 @@ export class LikesController {
     return this.likesService.remove(id);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(JwtGuard)
   @ApiOperation({
     summary: 'likelarni olish',
     description: 'Likelarni olish foydalauvchilar uchun',
@@ -86,5 +86,22 @@ export class LikesController {
   @Get('likes')
   getLikes(@Req() req: CustomExpress) {
     return this.likesService.getLikes(req);
+  }
+
+  @ApiOperation({
+    summary: 'likelarni olish',
+    description: 'tizimdagi barcha likelarni olish',
+  })
+  @ApiOkResponse({
+    description: 'Muvaffaqiyatli olindi',
+  })
+  @ApiUnprocessableEntityResponse({
+    description: "Xato tipdagi ma'lumot kiritildi",
+  })
+  @ApiBadRequestResponse({ description: "Xato ma'lumot kiritildi" })
+  @ApiInternalServerErrorResponse({ description: 'Serverda xatolik' })
+  @Get('likes/all')
+  getAllLikes() {
+    return this.likesService.getAllLikes();
   }
 }
