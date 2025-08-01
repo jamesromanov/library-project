@@ -54,14 +54,6 @@ export class CreateBookDto {
   @Max(2025)
   publishedYear: number;
 
-  @ApiProperty({ type: 'number', default: 120, description: 'Kitob narxi' })
-  @Transform(({ value }) => {
-    return parseInt(value);
-  })
-  @Type(() => Number)
-  @IsInt()
-  price: number;
-
   @ApiProperty({
     type: 'string',
     required: false,
@@ -95,7 +87,6 @@ export class CreateBookDto {
     description: 'Kitob pdf',
   })
   file: Express.Multer.File;
-
 
   @ApiProperty({
     type: 'string',

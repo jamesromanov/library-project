@@ -48,7 +48,6 @@ model Book {
   author String
   image String
   publishedYear Int
-  price Int
   description String?
   format String @default("pdf")
   file String 
@@ -60,7 +59,7 @@ model Book {
   active Boolean @default(true)
   likes Like[]
 
-  @@index([title, price, pages, language, createdAt])
+  @@index([title, pages, language, createdAt])
 }
 // APPLICAION 
 model Application {

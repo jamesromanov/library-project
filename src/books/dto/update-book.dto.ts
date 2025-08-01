@@ -53,17 +53,6 @@ export class UpdateBookDto extends PartialType(CreateBookDto) {
   publishedYear?: number;
 
   @ApiProperty({
-    type: Number,
-    default: 120,
-    description: 'Kitob narxi',
-    required: false,
-  })
-  @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  price?: number;
-
-  @ApiProperty({
     type: 'string',
     required: false,
     default: "Bu zo'r kitob",

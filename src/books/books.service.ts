@@ -27,7 +27,6 @@ export class BooksService {
     file: Express.Multer.File,
   ) {
     createBookDto.pages = Number(createBookDto.pages);
-    createBookDto.price = Number(createBookDto.price);
     createBookDto.publishedYear = Number(createBookDto.publishedYear);
 
     const book = await this.cloudinaryService
@@ -164,7 +163,6 @@ export class BooksService {
     updateBookDto.format = updateBookDto.format || undefined;
     updateBookDto.language = updateBookDto.language || undefined;
     updateBookDto.pages = Number(updateBookDto.pages) || undefined;
-    updateBookDto.price = Number(updateBookDto.price) || undefined;
 
     updateBookDto.publishedYear =
       Number(updateBookDto.publishedYear) || undefined;
